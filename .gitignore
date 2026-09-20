@@ -1,0 +1,76 @@
+# Environment variables - NEVER commit these
+.env
+.env.local
+.env.production
+*.env
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Build outputs
+dist/
+build/
+.vite/
+frontend/dist/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv/
+*.egg-info/
+dist/
+build/
+
+# AI/ML model artifacts
+*.pkl
+*.h5
+*.pt
+*.pth
+ai-service/models/trained/
+
+# GIS large files
+gis-data/imagery/*.tif
+gis-data/imagery/*.img
+gis-data/imagery/*.ecw
+
+# Logs
+logs/
+*.log
+
+# Database dumps (may contain sensitive data)
+*.dump
+*.sql.gz
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# Test coverage
+coverage/
+.nyc_output/
+htmlcov/
+
+# Docker volumes (local)
+docker/volumes/
+
+# Temporary
+tmp/
+temp/
+*.tmp

@@ -1,0 +1,16 @@
+{
+  "name": "landstack-backend",
+  "version": "1.0.0",
+  "description": "LANDSTACK Backend API — Parcel-Centric Land Governance Platform",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "seed-users": "node src/scripts/seedUsers.js",
+    "test": "node --test tests/api.test.js"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
