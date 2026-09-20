@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bharat LandStack - GIS Land Governance Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">LS</div>
+        <div>
+          <h1>LandStack</h1>
+          <span>Digital Public Infrastructure</span>
+        </div>
+      </div>
+
+      <nav>
+        <button class="nav-item active" data-section="mapView">◫ <span>Parcel Explorer</span></button>
+        <button class="nav-item" data-section="citizenView">⌂ <span>Citizen Services</span></button>
+        <button class="nav-item" data-section="adminView">▦ <span>Admin Dashboard</span></button>
+        <button class="nav-item" data-section="workflowView">⇄ <span>Workflows</span></button>
+      </nav>
+
+      <div class="sidebar-card">
+        <span class="label">Pilot Demo</span>
+        <strong>Tamil Nadu · Chennai</strong>
+        <small>Mock data for prototype demonstration</small>
+      </div>
+
+      <div class="sidebar-footer">
+        <span class="status-dot"></span>
+        <small>All systems operational</small>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Integrated GIS-based Digital Public Infrastructure</p>
+          <h2 id="pageTitle">Parcel Explorer</h2>
+        </div>
+        <div class="top-actions">
+          <div class="role-switch">
+            <span>Role</span>
+            <select id="roleSelect">
+              <option>Citizen</option>
+              <option>Revenue Officer</option>
+              <option>Registrar</option>
+              <option>Town Planner</option>
+              <option>Administrator</option>
+            </select>
+          </div>
+          <div class="avatar">SK</div>
+        </div>
+      </header>
+
+      <section id="mapView" class="view active">
+        <div class="stats-grid">
+          <article class="stat-card">
+            <span>Total Parcels</span>
+            <strong>12,486</strong>
+            <small>Demo jurisdiction</small>
+          </article>
+          <article class="stat-card">
+            <span>Verified Records</span>
+            <strong>11,934</strong>
+            <small class="positive">95.6% digitally linked</small>
+          </article>
+          <article class="stat-card">
+            <span>Open Transactions</span>
+            <strong>318</strong>
+            <small>Registration + mutation</small>
+          </article>
+          <article class="stat-card">
+            <span>Alerts</span>
+            <strong>27</strong>
+            <small class="warning">Needs department review</small>
+          </article>
+        </div>
+
+        <div class="workspace-grid">
+          <section class="panel map-panel">
+            <div class="panel-header">
+              <div>
+                <h3>GIS Parcel Map</h3>
+                <p>Search parcels by ULPIN, owner, locality or survey number.</p>
+              </div>
+              <div class="search-box">
+                <input id="parcelSearch" type="text" placeholder="Search ULPIN / owner / survey no."/>
+                <button id="searchBtn">Search</button>
+              </div>
+            </div>
+
+            <div class="map-toolbar">
+              <label><input type="checkbox" class="layer-toggle" data-layer="zoning" checked> Zoning</label>
+              <label><input type="checkbox" class="layer-toggle" data-layer="utility" checked> Utilities</label>
+              <label><input type="checkbox" class="layer-toggle" data-layer="restriction" checked> Restrictions</label>
+              <button id="resetMapBtn">Reset view</button>
+            </div>
+            <div id="map"></div>
+          </section>
+
+          <aside class="panel parcel-panel">
+            <div class="panel-header compact">
+              <div>
+                <p class="eyebrow">Selected parcel</p>
+                <h3 id="parcelTitle">ULPIN-TN-CHN-00124</h3>
+              </div>
+              <span class="verified-badge">Verified</span>
+            </div>
+
+            <div class="parcel-summary">
+              <div><span>Owner</span><strong id="ownerName">R. Meenakshi</strong></div>
+              <div><span>Survey No.</span><strong id="surveyNo">87/2B</strong></div>
+              <div><span>Area</span><strong id="parcelArea">2,450 sq ft</strong></div>
+              <div><span>Land Use</span><strong id="landUse">Residential</strong></div>
+            </div>
+
+            <div class="tabs">
+              <button class="tab active" data-tab="rightsTab">Rights</button>
+              <button class="tab" data-tab="planningTab">Planning</button>
+              <button class="tab" data-tab="fiscalTab">Fiscal</button>
+              <button class="tab" data-tab="infraTab">Infra</button>
+            </div>
+
+            <div id="rightsTab" class="tab-content active"></div>
+            <div id="planningTab" class="tab-content"></div>
+            <div id="fiscalTab" class="tab-content"></div>
+            <div id="infraTab" class="tab-content"></div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="citizenView" class="view">
+        <div class="hero-card">
+          <div>
+            <p class="eyebrow">Citizen Portal</p>
+            <h3>One place for land information and services</h3>
+            <p>Verify a parcel, check transaction status, submit a land-related request, or view public records using a single parcel identity.</p>
+          </div>
+          <div class="hero-search">
+            <input id="citizenSearch" placeholder="Enter ULPIN or Survey Number"/>
+            <button id="citizenSearchBtn">Verify Parcel</button>
+          </div>
+        </div>
+
+        <div class="service-grid">
+          <article class="service-card" data-service="verify">
+            <div class="service-icon">✓</div>
+            <h4>Ownership Verification</h4>
+            <p>Check linked RoR and current ownership status for a parcel.</p>
+            <button>Open Service</button>
+          </article>
+          <article class="service-card" data-service="transaction">
+            <div class="service-icon">⇄</div>
+            <h4>Transaction Tracking</h4>
+            <p>Track registration, mutation, approval and dispute workflows.</p>
+            <button>Track Status</button>
+          </article>
+          <article class="service-card" data-service="certificate">
+            <div class="service-icon">▤</div>
+            <h4>Land Information Report</h4>
+            <p>Generate a unified parcel report from linked government datasets.</p>
+            <button>Generate Report</button>
+          </article>
+          <article class="service-card" data-service="request">
+            <div class="service-icon">＋</div>
+            <h4>Service Request</h4>
+            <p>Raise correction, mutation or map-related service requests online.</p>
+            <button>Raise Request</button>
+          </article>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h3>Recent Citizen Requests</h3>
+              <p>Demo tracking data from integrated departmental workflows.</p>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Request ID</th><th>Service</th><th>ULPIN</th><th>Status</th><th>Updated</th></tr></thead>
+              <tbody>
+                <tr><td>REQ-2026-1042</td><td>Mutation</td><td>TN-CHN-00124</td><td><span class="pill amber">Under Review</span></td><td>Today</td></tr>
+                <tr><td>REQ-2026-1027</td><td>Building Approval</td><td>TN-CHN-00341</td><td><span class="pill blue">Town Planning</span></td><td>2 days ago</td></tr>
+                <tr><td>REQ-2026-0988</td><td>RoR Correction</td><td>TN-CHN-00522</td><td><span class="pill green">Completed</span></td><td>4 days ago</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="adminView" class="view">
+        <div class="stats-grid">
+          <article class="stat-card"><span>API Integrations</span><strong>9/11</strong><small>Departments connected</small></article>
+          <article class="stat-card"><span>Data Sync Health</span><strong>98.4%</strong><small class="positive">Last sync 6 min ago</small></article>
+          <article class="stat-card"><span>Pending Mutations</span><strong>146</strong><small>Across all wards</small></article>
+          <article class="stat-card"><span>Possible Conflicts</span><strong>19</strong><small class="warning">AI-assisted detection</small></article>
+        </div>
+
+        <div class="dashboard-grid">
+          <section class="panel">
+            <div class="panel-header">
+              <div><h3>Department Integration Status</h3><p>API and data synchronization health.</p></div>
+            </div>
+            <div id="integrationList" class="integration-list"></div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-header">
+              <div><h3>Governance Alerts</h3><p>Issues requiring attention.</p></div>
+            </div>
+            <div class="alerts-list">
+              <div class="alert-item high"><strong>Ownership mismatch</strong><span>3 parcels differ between RoR and registration records.</span></div>
+              <div class="alert-item medium"><strong>Building footprint change</strong><span>Satellite comparison flagged 8 parcels for review.</span></div>
+              <div class="alert-item low"><strong>Tax sync pending</strong><span>Latest municipal property tax batch is partially synchronized.</span></div>
+            </div>
+          </section>
+        </div>
+
+        <section class="panel">
+          <div class="panel-header">
+            <div><h3>Parcel Analytics</h3><p>Aggregated demo insights for planning and governance.</p></div>
+          </div>
+          <div class="analytics-grid">
+            <div>
+              <div class="metric-line"><span>Residential</span><strong>62%</strong></div>
+              <div class="bar"><i style="width:62%"></i></div>
+            </div>
+            <div>
+              <div class="metric-line"><span>Commercial</span><strong>19%</strong></div>
+              <div class="bar"><i style="width:19%"></i></div>
+            </div>
+            <div>
+              <div class="metric-line"><span>Industrial</span><strong>8%</strong></div>
+              <div class="bar"><i style="width:8%"></i></div>
+            </div>
+            <div>
+              <div class="metric-line"><span>Public / Other</span><strong>11%</strong></div>
+              <div class="bar"><i style="width:11%"></i></div>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <section id="workflowView" class="view">
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Inter-department workflow</p>
+              <h3>Registration → Mutation → Tax Update</h3>
+              <p>Example of interoperable parcel workflow across departments.</p>
+            </div>
+            <span class="pill blue">Live Simulation</span>
+          </div>
+
+          <div class="workflow">
+            <div class="workflow-step complete">
+              <span>1</span><div><strong>Registration submitted</strong><small>Registrar Department</small></div>
+            </div>
+            <div class="connector complete"></div>
+            <div class="workflow-step complete">
+              <span>2</span><div><strong>Deed validated</strong><small>Digital document verification</small></div>
+            </div>
+            <div class="connector complete"></div>
+            <div class="workflow-step active">
+              <span>3</span><div><strong>Mutation review</strong><small>Revenue Department</small></div>
+            </div>
+            <div class="connector"></div>
+            <div class="workflow-step">
+              <span>4</span><div><strong>RoR update</strong><small>Land Records</small></div>
+            </div>
+            <div class="connector"></div>
+            <div class="workflow-step">
+              <span>5</span><div><strong>Property tax sync</strong><small>Municipal Corporation</small></div>
+            </div>
+          </div>
+
+          <div class="workflow-meta">
+            <div><span>ULPIN</span><strong>TN-CHN-00124</strong></div>
+            <div><span>Transaction ID</span><strong>TXN-26-884271</strong></div>
+            <div><span>Started</span><strong>28 Aug 2026</strong></div>
+            <div><span>Current SLA</span><strong>2 working days</strong></div>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <section class="panel">
+            <div class="panel-header"><div><h3>Audit Trail</h3><p>Immutable-style action history for transparency.</p></div></div>
+            <div class="audit-list">
+              <div><time>31 Aug · 14:42</time><p><strong>Mutation assigned</strong><br>Revenue Officer - Ward 12</p></div>
+              <div><time>30 Aug · 11:10</time><p><strong>Registration API verified deed</strong><br>Document hash matched successfully</p></div>
+              <div><time>28 Aug · 16:24</time><p><strong>Citizen submitted registration</strong><br>Digital identity authentication successful</p></div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-header"><div><h3>API Events</h3><p>Illustrative machine-to-machine interoperability.</p></div></div>
+            <pre class="api-log">POST /api/v1/parcel/TN-CHN-00124/mutation
+200 OK
+
+GET /api/v1/ror/TN-CHN-00124
+200 OK
+
+POST /api/v1/tax/sync
+202 ACCEPTED</pre>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <div id="modal" class="modal">
+    <div class="modal-card">
+      <button class="modal-close" id="modalClose">×</button>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LandStack — Stage 3 GIS Prototype</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:#f4f7f2;color:#172018}
+.app{height:100vh;display:flex;flex-direction:column}.top{height:66px;background:#fff;border-bottom:1px solid #dce4da;display:flex;align-items:center;justify-content:space-between;padding:0 22px;z-index:1000}
+.logo{font-weight:850;font-size:21px}.logo b{color:#527a22}.stage{font-size:10px;color:#5f695d;border:1px solid #dce4da;border-radius:20px;padding:6px 10px}
+.main{flex:1;min-height:0;display:flex}.leftpanel{width:390px;background:#fff;border-right:1px solid #dce4da;display:flex;flex-direction:column;z-index:950;overflow:hidden}
+.mapwrap{flex:1;position:relative;min-width:0}#map{position:absolute;inset:0}
+.searchbox{padding:17px;border-bottom:1px solid #e2e8e0}.label{font-size:10px;text-transform:uppercase;letter-spacing:1px;font-weight:800;color:#687267}.searchbox h1{font-size:18px;margin:4px 0 11px}.row{display:flex;gap:7px}.row input{flex:1;min-width:0;border:1px solid #ccd7c9;border-radius:9px;padding:10px;font-size:12px;outline:0}.row input:focus{border-color:#70973a}.row button{background:#426714;color:white;border:0;border-radius:9px;font-weight:750;padding:0 13px;cursor:pointer}
+.chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}.chip{font-size:9px;background:#f0f4ed;color:#4d7024;border:1px solid #dce6d7;padding:5px 8px;border-radius:14px;cursor:pointer}.filters{display:flex;gap:6px;margin-top:10px}.filters select{flex:1;border:1px solid #d4ddd1;border-radius:8px;padding:7px;font-size:10px;background:white}.source{font-size:9px;color:#7b8479;margin-top:8px}
+.parcelsection{flex:1;min-height:0;display:flex;flex-direction:column;padding:15px}.parcelsection h2{font-size:17px;margin:3px 0}.sub{font-size:10px;color:#778077;margin:0}.count{font-size:9px;color:#56732e;font-weight:750;margin-top:7px}.list{overflow:auto;flex:1;margin-top:9px;padding-right:2px}
+.card{border:1px solid #dfe6dc;border-radius:10px;padding:10px;margin-bottom:7px;cursor:pointer}.card:hover{background:#f5f9f2;border-color:#89a96b}.id{font-size:9px;color:#537a22;font-weight:850}.title{font-size:12px;font-weight:750;margin-top:3px}.meta{font-size:9px;color:#727b70;margin-top:5px}.badge{float:right;font-size:8px;padding:4px 6px;border-radius:10px;background:#e8f1df;color:#4d701f;font-weight:750}
+.detail{display:none;overflow:auto;padding:17px}.detail.show{display:block}.back{border:0;background:#edf1eb;color:#566153;border-radius:8px;padding:7px 10px;font-size:9px;cursor:pointer}.detail h2{font-size:19px;margin:8px 0 12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.box{background:#f5f7f3;padding:9px;border-radius:8px}.box small{display:block;font-size:8px;color:#788176}.box strong{display:block;font-size:11px;margin-top:3px}.sec{margin-top:13px}.sec h3{font-size:10px;margin:0 0 6px}.record{border:1px solid #e0e6de;border-radius:7px;padding:8px;font-size:9px;margin-bottom:5px;display:flex;justify-content:space-between}.record span:last-child{color:#557c28;font-weight:750}.notice{margin-top:12px;padding:9px;background:#f1f6ed;border:1px solid #dce9d4;border-radius:8px;font-size:9px;line-height:1.4;color:#53664b}
+.legend{position:absolute;bottom:15px;left:15px;z-index:700;background:white;border:1px solid #dce4da;border-radius:8px;padding:8px 10px;font-size:9px;box-shadow:0 5px 15px rgba(25,45,23,.1)}.sw{display:inline-block;width:9px;height:9px;background:#91b85e;border:1px solid #426714;margin-right:5px}
+@media(max-width:800px){.leftpanel{width:340px}}@media(max-width:620px){.leftpanel{position:absolute;z-index:1000;left:0;top:0;bottom:0;width:min(88vw,360px);box-shadow:7px 0 25px rgba(25,45,23,.12)}.stage{display:none}.legend{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top"><div class="logo">Land<b>Stack</b></div><div class="stage">Stage 3 · GIS + Record Architecture</div></header>
+<div class="main">
+<aside class="leftpanel">
+<div id="listView">
+<section class="searchbox">
+<div class="label">Land information seeker</div>
+<h1>Explore land by location</h1>
+<div class="row"><input id="city" value="Durgapur" placeholder="City name"><button onclick="goCity()">Search</button></div>
+<div class="chips"><span class="chip" onclick="setCity('Durgapur')">Durgapur</span><span class="chip" onclick="setCity('Kolkata')">Kolkata</span><span class="chip" onclick="setCity('Bengaluru')">Bengaluru</span></div>
+<div class="filters">
+<select id="use" onchange="refresh()"><option value="all">All land uses</option><option>Residential</option><option>Commercial</option><option>Agricultural</option><option>Mixed use</option></select>
+<select id="status" onchange="refresh()"><option value="all">All statuses</option><option>Verified</option><option>Pending</option></select>
+</div>
+<div class="source">Stage 3 prototype · mock GIS/cadastral data</div>
+</section>
+<section class="parcelsection">
+<div class="label">Parcel explorer</div><h2 id="cityName">Durgapur</h2><p class="sub">Select a parcel from the list or click its boundary on the map.</p><div class="count" id="count"></div>
+<div class="list" id="list"></div>
+</section>
+</div>
+<div class="detail" id="detail">
+<button class="back" onclick="back()">← Back to parcels</button>
+<div class="id" id="did"></div><h2 id="dtitle"></h2>
+<div class="grid">
+<div class="box"><small>Parcel ID</small><strong id="dparcel"></strong></div><div class="box"><small>Plot number</small><strong id="dplot"></strong></div>
+<div class="box"><small>Area</small><strong id="darea"></strong></div><div class="box"><small>Land use</small><strong id="duse"></strong></div>
+<div class="box"><small>Ownership type</small><strong id="downer"></strong></div><div class="box"><small>Record status</small><strong id="dstatus"></strong></div>
+<div class="box"><small>Last updated</small><strong id="ddate"></strong></div><div class="box"><small>Source</small><strong id="dsource"></strong></div>
+</div>
+<div class="sec"><h3>Spatial reference</h3><div class="box"><small>Representative coordinate</small><strong id="dcoord"></strong></div></div>
+<div class="sec"><h3>Linked records</h3>
+<div class="record"><span>Parcel map / sketch</span><span>Available</span></div><div class="record"><span>Land-use record</span><span>Available</span></div><div class="record"><span>Ownership record</span><span>Restricted</span></div><div class="record"><span>Transaction history</span><span>Coming later</span></div>
+</div>
+<div class="notice"><b>Data provenance:</b> Demonstration data only. Production records should retain source agency, source record ID, retrieval date and verification state.</div>
+</div>
+</aside>
+<div class="mapwrap">
+<div id="map"></div>
+
+<section class="panel search">
+<div class="label">Land information seeker</div>
+<h1>Search a city and explore its parcels</h1>
+<div class="row"><input id="city" value="Durgapur" placeholder="City name"><button onclick="goCity()">Search</button></div>
+<div class="chips"><span class="chip" onclick="setCity('Durgapur')">Durgapur</span><span class="chip" onclick="setCity('Kolkata')">Kolkata</span><span class="chip" onclick="setCity('Bengaluru')">Bengaluru</span></div>
+<div class="filters">
+<select id="use" onchange="refresh()"><option value="all">All land uses</option><option>Residential</option><option>Commercial</option><option>Agricultural</option><option>Mixed use</option></select>
+<select id="status" onchange="refresh()"><option value="all">All record statuses</option><option>Verified</option><option>Pending</option></select>
+</div>
+<div class="source">Stage 3 uses mock GeoJSON-style parcel data. The architecture is ready for authoritative cadastral layers and a spatial database.</div>
+</section>
+<div class="legend"><span class="sw"></span>Parcel boundary · click to inspect</div>
+</div>
+
+</div>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const C={durgapur:{name:"Durgapur",center:[23.5204,87.3119],zoom:13},kolkata:{name:"Kolkata",center:[22.5726,88.3639],zoom:12},bengaluru:{name:"Bengaluru",center:[12.9716,77.5946],zoom:12}};
+let key="durgapur",layer,polys={};
+const map=L.map("map").setView(C.durgapur.center,13);
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"&copy; OpenStreetMap contributors"}).addTo(map);
+
+function records(){
+const [a,b]=C[key].center,d=.0031;
+return[
+{id:"LS-001",plot:"127",title:"Parcel A — Main Road",area:"2,400 m²",use:"Residential",owner:"Private",status:"Verified",date:"12 Aug 2026",source:"Prototype GIS",coords:[[a+d,b-d],[a+d,b],[a,b],[a,b-d]]},
+{id:"LS-002",plot:"128",title:"Parcel B — East Block",area:"3,150 m²",use:"Mixed use",owner:"Private",status:"Pending",date:"08 Aug 2026",source:"Prototype GIS",coords:[[a+d,b],[a+d,b+d],[a,b+d],[a,b]]},
+{id:"LS-003",plot:"141",title:"Parcel C — South Block",area:"1,980 m²",use:"Commercial",owner:"Private",status:"Verified",date:"02 Aug 2026",source:"Prototype GIS",coords:[[a,b-d],[a,b],[a-d,b],[a-d,b-d]]},
+{id:"LS-004",plot:"142",title:"Parcel D — South East",area:"2,760 m²",use:"Residential",owner:"Institutional",status:"Verified",date:"30 Jul 2026",source:"Prototype GIS",coords:[[a,b],[a,b+d],[a-d,b+d],[a-d,b]]},
+{id:"LS-005",plot:"155",title:"Parcel E — North Extension",area:"4,100 m²",use:"Agricultural",owner:"Private",status:"Pending",date:"25 Jul 2026",source:"Prototype GIS",coords:[[a+2*d,b-d],[a+2*d,b],[a+d,b],[a+d,b-d]]},
+{id:"LS-006",plot:"156",title:"Parcel F — North East",area:"2,210 m²",use:"Commercial",owner:"Private",status:"Verified",date:"21 Jul 2026",source:"Prototype GIS",coords:[[a+2*d,b],[a+2*d,b+d],[a+d,b+d],[a+d,b]]}
+]}
+
+function draw(){
+if(layer)map.removeLayer(layer);layer=L.layerGroup().addTo(map);polys={};
+records().forEach(p=>{let x=L.polygon(p.coords,{color:"#426714",weight:2,fillColor:"#91b85e",fillOpacity:.25}).addTo(layer);polys[p.id]=x;x.on("mouseover",()=>x.setStyle({fillOpacity:.5,weight:3}));x.on("mouseout",()=>x.setStyle({fillOpacity:.25,weight:2}));x.on("click",()=>detail(p));});
+refresh();
+}
+function refresh(){
+const u=document.getElementById("use").value,s=document.getElementById("status").value;
+const arr=records().filter(p=>(u==="all"||p.use===u)&&(s==="all"||p.status===s));
+document.getElementById("count").textContent=`${arr.length} parcel${arr.length!==1?"s":""} in current layer`;
+document.getElementById("list").innerHTML=arr.map(p=>`<div class="card" onclick="detailById('${p.id}')"><span class="badge">${p.status}</span><div class="id">${p.id} · Plot ${p.plot}</div><div class="title">${p.title}</div><div class="meta">${p.area} · ${p.use} · ${p.owner}</div></div>`).join("");
+}
+function detailById(id){detail(records().find(p=>p.id===id))}
+function detail(p){
+["did","dtitle","dparcel","dplot","darea","duse","downer","dstatus","ddate","dsource"].forEach((id,i)=>document.getElementById(id).textContent=[`PARCEL ${p.id}`,p.title,p.id,p.plot,p.area,p.use,p.owner,p.status,p.date,p.source][i]);
+document.getElementById("dcoord").textContent=p.coords[0].map(v=>v.toFixed(5)).join(", ");
+document.getElementById("listView").style.display="none";document.getElementById("detail").classList.add("show");
+Object.values(polys).forEach(x=>x.setStyle({fillOpacity:.25,weight:2}));polys[p.id].setStyle({fillOpacity:.55,weight:4});map.fitBounds(polys[p.id].getBounds(),{padding:[90,90]});
+}
+function back(){document.getElementById("detail").classList.remove("show");document.getElementById("listView").style.display="block";Object.values(polys).forEach(x=>x.setStyle({fillOpacity:.25,weight:2}))}
+function setCity(n){document.getElementById("city").value=n;goCity()}
+function goCity(){let k=document.getElementById("city").value.trim().toLowerCase();if(!C[k]){alert("Prototype supports Durgapur, Kolkata and Bengaluru. A production geocoder can support any city.");return}key=k;document.getElementById("cityName").textContent=C[k].name;map.setView(C[k].center,C[k].zoom);back();draw()}
+draw();
+</script>
+</body>
+</html>
