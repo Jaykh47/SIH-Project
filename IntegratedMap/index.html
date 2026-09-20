@@ -1,0 +1,1531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bharat LandStack - GIS Land Governance Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <!-- <link rel="stylesheet" href="style.css"/> -->
+
+  <style>
+    :root {
+  --bg: #f4f7fb;
+  --panel: #ffffff;
+  --text: #162033;
+  --muted: #6b7485;
+  --line: #e6eaf0;
+  --primary: #176b5b;
+  --primary2: #0f8a70;
+  --soft: #e8f4f1;
+  --nav: #0d1d2a;
+  --warning: #a76b10;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  font-family: Inter, system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+button,
+input,
+select {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+}
+.app-shell {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  min-height: 100vh;
+}
+.sidebar {
+  background: var(--nav);
+  color: #fff;
+  padding: 24px 18px;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+.brand {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 0 8px 24px;
+}
+.brand-mark {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #2fb98f, #6dd7b8);
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  color: #06241d;
+}
+.brand h1 {
+  margin: 0;
+  font-size: 19px;
+}
+.brand span {
+  font-size: 11px;
+  color: #9fb0bc;
+}
+nav {
+  display: grid;
+  gap: 8px;
+}
+.nav-item {
+  border: 0;
+  background: transparent;
+  color: #b7c3cc;
+  padding: 13px 14px;
+  border-radius: 10px;
+  text-align: left;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.nav-item:hover,
+.nav-item.active {
+  background: #183142;
+  color: #fff;
+}
+.sidebar-card {
+  margin-top: auto;
+  background: #142a39;
+  border: 1px solid #254253;
+  padding: 16px;
+  border-radius: 14px;
+  display: grid;
+  gap: 7px;
+}
+.sidebar-card .label {
+  font-size: 10px;
+  text-transform: uppercase;
+  color: #7ed7bd;
+  letter-spacing: 0.1em;
+}
+.sidebar-card small {
+  color: #96aab7;
+  line-height: 1.5;
+}
+.sidebar-footer {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  color: #9fb0bc;
+  margin-top: 16px;
+  padding: 0 8px;
+}
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background: #5fe1a8;
+  border-radius: 50%;
+}
+.main {
+  padding: 0 28px 36px;
+  min-width: 0;
+}
+.topbar {
+  height: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--primary2);
+  margin: 0 0 6px;
+}
+.topbar h2 {
+  margin: 0;
+  font-size: 25px;
+}
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.role-switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border: 1px solid var(--line);
+  padding: 8px 10px;
+  border-radius: 10px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.role-switch select {
+  border: 0;
+  outline: 0;
+  font-weight: 600;
+  color: var(--text);
+  background: transparent;
+}
+.avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #dfe9f1;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 12px;
+}
+.view {
+  display: none;
+}
+.view.active {
+  display: block;
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.stat-card,
+.panel,
+.hero-card,
+.service-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+.stat-card {
+  padding: 18px;
+  display: grid;
+  gap: 7px;
+}
+.stat-card span {
+  color: var(--muted);
+  font-size: 12px;
+}
+.stat-card strong {
+  font-size: 27px;
+}
+.stat-card small {
+  color: var(--muted);
+}
+.positive {
+  color: #14835f !important;
+}
+.warning {
+  color: var(--warning) !important;
+}
+.workspace-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(330px, 0.85fr);
+  gap: 16px;
+}
+.panel {
+  overflow: hidden;
+}
+.panel-header {
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+.panel-header.compact {
+  padding-bottom: 14px;
+}
+.panel-header h3 {
+  margin: 0 0 5px;
+  font-size: 16px;
+}
+.panel-header p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+.search-box {
+  display: flex;
+  gap: 8px;
+}
+.search-box input,
+.hero-search input {
+  border: 1px solid var(--line);
+  padding: 10px 12px;
+  border-radius: 9px;
+  min-width: 250px;
+  outline: none;
+}
+.search-box button,
+.hero-search button,
+.service-card button {
+  border: 0;
+  background: var(--primary);
+  color: white;
+  padding: 10px 14px;
+  border-radius: 9px;
+  font-weight: 600;
+}
+.map-toolbar {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 10px 16px;
+  font-size: 12px;
+  color: var(--muted);
+  border-bottom: 1px solid var(--line);
+}
+.map-toolbar button {
+  margin-left: auto;
+  border: 1px solid var(--line);
+  background: #fff;
+  padding: 7px 10px;
+  border-radius: 8px;
+}
+#map {
+  height: 540px;
+  width: 100%;
+}
+.parcel-panel {
+  min-height: 640px;
+}
+.verified-badge {
+  background: #e7f7f1;
+  color: #14785c;
+  padding: 7px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.parcel-summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 18px;
+}
+.parcel-summary div {
+  background: #f7f9fc;
+  border: 1px solid var(--line);
+  padding: 12px;
+  border-radius: 10px;
+  display: grid;
+  gap: 5px;
+}
+.parcel-summary span,
+.info-row span {
+  color: var(--muted);
+  font-size: 11px;
+}
+.parcel-summary strong {
+  font-size: 13px;
+}
+.tabs {
+  display: flex;
+  padding: 0 14px;
+  border-bottom: 1px solid var(--line);
+}
+.tab {
+  border: 0;
+  background: none;
+  padding: 11px 10px;
+  color: var(--muted);
+  font-size: 12px;
+  border-bottom: 2px solid transparent;
+}
+.tab.active {
+  color: var(--primary);
+  border-color: var(--primary);
+  font-weight: 700;
+}
+.tab-content {
+  display: none;
+  padding: 15px 18px;
+}
+.tab-content.active {
+  display: block;
+}
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--line);
+}
+.info-row strong {
+  font-size: 12px;
+  text-align: right;
+}
+.hero-card {
+  padding: 28px;
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+  align-items: center;
+  background: linear-gradient(120deg, #f3fbf8, #fff);
+}
+.hero-card h3 {
+  font-size: 25px;
+  margin: 3px 0 8px;
+}
+.hero-card p {
+  color: var(--muted);
+  max-width: 680px;
+  line-height: 1.6;
+}
+.hero-search {
+  display: flex;
+  gap: 8px;
+}
+.service-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin: 16px 0;
+}
+.service-card {
+  padding: 20px;
+}
+.service-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--soft);
+  color: var(--primary);
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+}
+.service-card h4 {
+  margin: 14px 0 7px;
+}
+.service-card p {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+  min-height: 58px;
+}
+.service-card button {
+  width: 100%;
+  background: #eef5f3;
+  color: var(--primary);
+}
+.table-wrap {
+  overflow: auto;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+th,
+td {
+  text-align: left;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line);
+  font-size: 12px;
+}
+th {
+  color: var(--muted);
+  font-weight: 600;
+  background: #fafbfd;
+}
+.pill {
+  padding: 5px 8px;
+  border-radius: 99px;
+  font-size: 10px;
+  font-weight: 700;
+}
+.green {
+  background: #e6f6ee;
+  color: #14785c;
+}
+.amber {
+  background: #fff2d9;
+  color: #9a6515;
+}
+.blue {
+  background: #e9f1ff;
+  color: #3560a8;
+}
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.integration-list {
+  padding: 10px 18px;
+}
+.integration-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  padding: 11px 2px;
+  border-bottom: 1px solid var(--line);
+}
+.integration-item small {
+  color: var(--muted);
+}
+.integration-status {
+  font-size: 11px;
+  font-weight: 700;
+  color: #14835f;
+}
+.alerts-list {
+  padding: 14px;
+}
+.alert-item {
+  padding: 13px 14px;
+  border-left: 4px solid #e0a640;
+  background: #fbfbfc;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  display: grid;
+  gap: 5px;
+}
+.alert-item span {
+  color: var(--muted);
+  font-size: 12px;
+}
+.alert-item.high {
+  border-color: #d34f4f;
+}
+.alert-item.low {
+  border-color: #5b8ed6;
+}
+.analytics-grid {
+  padding: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+}
+.metric-line {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+}
+.bar {
+  height: 8px;
+  border-radius: 10px;
+  background: #edf0f3;
+  overflow: hidden;
+  margin-top: 8px;
+}
+.bar i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #168268, #35ad8d);
+}
+.workflow {
+  padding: 26px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  overflow: auto;
+}
+.workflow-step {
+  min-width: 140px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  color: #8b95a3;
+}
+.workflow-step > span {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid #cfd6dd;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+}
+.workflow-step div {
+  display: grid;
+  gap: 3px;
+}
+.workflow-step strong {
+  font-size: 11px;
+}
+.workflow-step small {
+  font-size: 9px;
+}
+.workflow-step.complete,
+.workflow-step.active {
+  color: var(--primary);
+}
+.workflow-step.complete > span {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+.workflow-step.active > span {
+  border-color: var(--primary);
+}
+.connector {
+  height: 2px;
+  min-width: 35px;
+  background: #d8dee4;
+}
+.connector.complete {
+  background: var(--primary);
+}
+.workflow-meta {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid var(--line);
+}
+.workflow-meta div {
+  padding: 16px;
+  border-right: 1px solid var(--line);
+  display: grid;
+  gap: 5px;
+}
+.workflow-meta span {
+  font-size: 10px;
+  color: var(--muted);
+}
+.workflow-meta strong {
+  font-size: 12px;
+}
+.audit-list {
+  padding: 10px 18px;
+}
+.audit-list > div {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.audit-list time {
+  font-size: 10px;
+  color: var(--muted);
+}
+.audit-list p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.api-log {
+  margin: 14px;
+  background: #101922;
+  color: #c5f6e8;
+  border-radius: 10px;
+  padding: 18px;
+  font-size: 11px;
+  line-height: 1.7;
+  overflow: auto;
+}
+.toast {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  background: #11202b;
+  color: white;
+  padding: 12px 16px;
+  border-radius: 10px;
+  opacity: 0;
+  transform: translateY(15px);
+  pointer-events: none;
+  transition: 0.25s;
+  z-index: 9999;
+  font-size: 12px;
+}
+.toast.show {
+  opacity: 1;
+  transform: none;
+}
+.modal {
+  position: fixed;
+  inset: 0;
+  background: #0c1823aa;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9998;
+  padding: 20px;
+}
+.modal.show {
+  display: flex;
+}
+.modal-card {
+  background: white;
+  border-radius: 16px;
+  max-width: 560px;
+  width: 100%;
+  padding: 24px;
+  position: relative;
+}
+.modal-close {
+  position: absolute;
+  right: 14px;
+  top: 12px;
+  border: 0;
+  background: none;
+  font-size: 22px;
+}
+.modal-card h3 {
+  margin-top: 0;
+}
+.modal-card p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+.modal-form {
+  display: grid;
+  gap: 10px;
+}
+.modal-form input,
+.modal-form select,
+.modal-form textarea {
+  padding: 11px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+}
+.modal-form button {
+  border: 0;
+  background: var(--primary);
+  color: white;
+  padding: 11px;
+  border-radius: 9px;
+  font-weight: 700;
+}
+.leaflet-popup-content-wrapper {
+  border-radius: 12px;
+}
+.map-popup strong {
+  display: block;
+  margin-bottom: 4px;
+}
+.map-popup small {
+  display: block;
+  color: #6f7884;
+  margin-top: 3px;
+}
+@media (max-width: 1100px) {
+  .app-shell {
+    grid-template-columns: 82px 1fr;
+  }
+  .sidebar {
+    padding: 22px 10px;
+  }
+  .brand > div:last-child,
+  .nav-item span,
+  .sidebar-card,
+  .sidebar-footer small {
+    display: none;
+  }
+  .brand {
+    justify-content: center;
+  }
+  .nav-item {
+    justify-content: center;
+  }
+  .stats-grid,
+  .service-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .workspace-grid {
+    grid-template-columns: 1fr;
+  }
+  .parcel-panel {
+    min-height: auto;
+  }
+}
+@media (max-width: 720px) {
+  .app-shell {
+    display: block;
+  }
+  .sidebar {
+    height: auto;
+    position: static;
+    flex-direction: row;
+    align-items: center;
+    overflow: auto;
+  }
+  .brand {
+    padding: 0 8px;
+  }
+  .sidebar nav {
+    display: flex;
+  }
+  .main {
+    padding: 0 12px 24px;
+  }
+  .topbar {
+    height: auto;
+    padding: 16px 0;
+    align-items: flex-start;
+  }
+  .role-switch span {
+    display: none;
+  }
+  .stats-grid,
+  .service-grid,
+  .dashboard-grid,
+  .analytics-grid {
+    grid-template-columns: 1fr;
+  }
+  .hero-card {
+    display: block;
+  }
+  .hero-search {
+    margin-top: 15px;
+    display: grid;
+  }
+  .search-box {
+    display: grid;
+    width: 100%;
+  }
+  .search-box input,
+  .hero-search input {
+    min-width: 0;
+    width: 100%;
+  }
+  .panel-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .workflow-meta {
+    grid-template-columns: 1fr 1fr;
+  }
+  .workspace-grid {
+    display: block;
+  }
+  .parcel-panel {
+    margin-top: 14px;
+  }
+  #map {
+    height: 420px;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">LS</div>
+        <div>
+          <h1>LandStack</h1>
+          <span>Digital Public Infrastructure</span>
+        </div>
+      </div>
+
+      <nav>
+        <button class="nav-item active" data-section="mapView">◫ <span>Parcel Explorer</span></button>
+        <button class="nav-item" data-section="citizenView">⌂ <span>Citizen Services</span></button>
+        <button class="nav-item" data-section="adminView">▦ <span>Admin Dashboard</span></button>
+        <button class="nav-item" data-section="workflowView">⇄ <span>Workflows</span></button>
+      </nav>
+
+      <div class="sidebar-card">
+        <span class="label">Pilot Demo</span>
+        <strong>Tamil Nadu · Chennai</strong>
+        <small>Mock data for prototype demonstration</small>
+      </div>
+
+      <div class="sidebar-footer">
+        <span class="status-dot"></span>
+        <small>All systems operational</small>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Integrated GIS-based Digital Public Infrastructure</p>
+          <h2 id="pageTitle">Parcel Explorer</h2>
+        </div>
+        <div class="top-actions">
+          <div class="role-switch">
+            <span>Role</span>
+            <select id="roleSelect">
+              <option>Citizen</option>
+              <option>Revenue Officer</option>
+              <option>Registrar</option>
+              <option>Town Planner</option>
+              <option>Administrator</option>
+            </select>
+          </div>
+          <div class="avatar">SK</div>
+        </div>
+      </header>
+
+      <section id="mapView" class="view active">
+        <div class="stats-grid">
+          <article class="stat-card">
+            <span>Total Parcels</span>
+            <strong>12,486</strong>
+            <small>Demo jurisdiction</small>
+          </article>
+          <article class="stat-card">
+            <span>Verified Records</span>
+            <strong>11,934</strong>
+            <small class="positive">95.6% digitally linked</small>
+          </article>
+          <article class="stat-card">
+            <span>Open Transactions</span>
+            <strong>318</strong>
+            <small>Registration + mutation</small>
+          </article>
+          <article class="stat-card">
+            <span>Alerts</span>
+            <strong>27</strong>
+            <small class="warning">Needs department review</small>
+          </article>
+        </div>
+
+        <div class="workspace-grid">
+          <section class="panel map-panel">
+            <div class="panel-header">
+              <div>
+                <h3>GIS Parcel Map</h3>
+                <p>Search parcels by ULPIN, owner, locality or survey number.</p>
+              </div>
+              <div class="search-box">
+                <input id="parcelSearch" type="text" placeholder="Search ULPIN / owner / survey no."/>
+                <button id="searchBtn">Search</button>
+              </div>
+            </div>
+
+            <div class="map-toolbar">
+              <label><input type="checkbox" class="layer-toggle" data-layer="zoning" checked> Zoning</label>
+              <label><input type="checkbox" class="layer-toggle" data-layer="utility" checked> Utilities</label>
+              <label><input type="checkbox" class="layer-toggle" data-layer="restriction" checked> Restrictions</label>
+              <button id="resetMapBtn">Reset view</button>
+            </div>
+            <div id="map"></div>
+          </section>
+
+          <aside class="panel parcel-panel">
+            <div class="panel-header compact">
+              <div>
+                <p class="eyebrow">Selected parcel</p>
+                <h3 id="parcelTitle">ULPIN-TN-CHN-00124</h3>
+              </div>
+              <span class="verified-badge">Verified</span>
+            </div>
+
+            <div class="parcel-summary">
+              <div><span>Owner</span><strong id="ownerName">R. Meenakshi</strong></div>
+              <div><span>Survey No.</span><strong id="surveyNo">87/2B</strong></div>
+              <div><span>Area</span><strong id="parcelArea">2,450 sq ft</strong></div>
+              <div><span>Land Use</span><strong id="landUse">Residential</strong></div>
+            </div>
+
+            <div class="tabs">
+              <button class="tab active" data-tab="rightsTab">Rights</button>
+              <button class="tab" data-tab="planningTab">Planning</button>
+              <button class="tab" data-tab="fiscalTab">Fiscal</button>
+              <button class="tab" data-tab="infraTab">Infra</button>
+            </div>
+
+            <div id="rightsTab" class="tab-content active"></div>
+            <div id="planningTab" class="tab-content"></div>
+            <div id="fiscalTab" class="tab-content"></div>
+            <div id="infraTab" class="tab-content"></div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="citizenView" class="view">
+        <div class="hero-card">
+          <div>
+            <p class="eyebrow">Citizen Portal</p>
+            <h3>One place for land information and services</h3>
+            <p>Verify a parcel, check transaction status, submit a land-related request, or view public records using a single parcel identity.</p>
+          </div>
+          <div class="hero-search">
+            <input id="citizenSearch" placeholder="Enter ULPIN or Survey Number"/>
+            <button id="citizenSearchBtn">Verify Parcel</button>
+          </div>
+        </div>
+
+        <div class="service-grid">
+          <article class="service-card" data-service="verify">
+            <div class="service-icon">✓</div>
+            <h4>Ownership Verification</h4>
+            <p>Check linked RoR and current ownership status for a parcel.</p>
+            <button>Open Service</button>
+          </article>
+          <article class="service-card" data-service="transaction">
+            <div class="service-icon">⇄</div>
+            <h4>Transaction Tracking</h4>
+            <p>Track registration, mutation, approval and dispute workflows.</p>
+            <button>Track Status</button>
+          </article>
+          <article class="service-card" data-service="certificate">
+            <div class="service-icon">▤</div>
+            <h4>Land Information Report</h4>
+            <p>Generate a unified parcel report from linked government datasets.</p>
+            <button>Generate Report</button>
+          </article>
+          <article class="service-card" data-service="request">
+            <div class="service-icon">＋</div>
+            <h4>Service Request</h4>
+            <p>Raise correction, mutation or map-related service requests online.</p>
+            <button>Raise Request</button>
+          </article>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h3>Recent Citizen Requests</h3>
+              <p>Demo tracking data from integrated departmental workflows.</p>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Request ID</th><th>Service</th><th>ULPIN</th><th>Status</th><th>Updated</th></tr></thead>
+              <tbody>
+                <tr><td>REQ-2026-1042</td><td>Mutation</td><td>TN-CHN-00124</td><td><span class="pill amber">Under Review</span></td><td>Today</td></tr>
+                <tr><td>REQ-2026-1027</td><td>Building Approval</td><td>TN-CHN-00341</td><td><span class="pill blue">Town Planning</span></td><td>2 days ago</td></tr>
+                <tr><td>REQ-2026-0988</td><td>RoR Correction</td><td>TN-CHN-00522</td><td><span class="pill green">Completed</span></td><td>4 days ago</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="adminView" class="view">
+        <div class="stats-grid">
+          <article class="stat-card"><span>API Integrations</span><strong>9/11</strong><small>Departments connected</small></article>
+          <article class="stat-card"><span>Data Sync Health</span><strong>98.4%</strong><small class="positive">Last sync 6 min ago</small></article>
+          <article class="stat-card"><span>Pending Mutations</span><strong>146</strong><small>Across all wards</small></article>
+          <article class="stat-card"><span>Possible Conflicts</span><strong>19</strong><small class="warning">AI-assisted detection</small></article>
+        </div>
+
+        <div class="dashboard-grid">
+          <section class="panel">
+            <div class="panel-header">
+              <div><h3>Department Integration Status</h3><p>API and data synchronization health.</p></div>
+            </div>
+            <div id="integrationList" class="integration-list"></div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-header">
+              <div><h3>Governance Alerts</h3><p>Issues requiring attention.</p></div>
+            </div>
+            <div class="alerts-list">
+              <div class="alert-item high"><strong>Ownership mismatch</strong><span>3 parcels differ between RoR and registration records.</span></div>
+              <div class="alert-item medium"><strong>Building footprint change</strong><span>Satellite comparison flagged 8 parcels for review.</span></div>
+              <div class="alert-item low"><strong>Tax sync pending</strong><span>Latest municipal property tax batch is partially synchronized.</span></div>
+            </div>
+          </section>
+        </div>
+
+        <section class="panel">
+          <div class="panel-header">
+            <div><h3>Parcel Analytics</h3><p>Aggregated demo insights for planning and governance.</p></div>
+          </div>
+          <div class="analytics-grid">
+            <div>
+              <div class="metric-line"><span>Residential</span><strong>62%</strong></div>
+              <div class="bar"><i style="width:62%"></i></div>
+            </div>
+            <div>
+              <div class="metric-line"><span>Commercial</span><strong>19%</strong></div>
+              <div class="bar"><i style="width:19%"></i></div>
+            </div>
+            <div>
+              <div class="metric-line"><span>Industrial</span><strong>8%</strong></div>
+              <div class="bar"><i style="width:8%"></i></div>
+            </div>
+            <div>
+              <div class="metric-line"><span>Public / Other</span><strong>11%</strong></div>
+              <div class="bar"><i style="width:11%"></i></div>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <section id="workflowView" class="view">
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Inter-department workflow</p>
+              <h3>Registration → Mutation → Tax Update</h3>
+              <p>Example of interoperable parcel workflow across departments.</p>
+            </div>
+            <span class="pill blue">Live Simulation</span>
+          </div>
+
+          <div class="workflow">
+            <div class="workflow-step complete">
+              <span>1</span><div><strong>Registration submitted</strong><small>Registrar Department</small></div>
+            </div>
+            <div class="connector complete"></div>
+            <div class="workflow-step complete">
+              <span>2</span><div><strong>Deed validated</strong><small>Digital document verification</small></div>
+            </div>
+            <div class="connector complete"></div>
+            <div class="workflow-step active">
+              <span>3</span><div><strong>Mutation review</strong><small>Revenue Department</small></div>
+            </div>
+            <div class="connector"></div>
+            <div class="workflow-step">
+              <span>4</span><div><strong>RoR update</strong><small>Land Records</small></div>
+            </div>
+            <div class="connector"></div>
+            <div class="workflow-step">
+              <span>5</span><div><strong>Property tax sync</strong><small>Municipal Corporation</small></div>
+            </div>
+          </div>
+
+          <div class="workflow-meta">
+            <div><span>ULPIN</span><strong>TN-CHN-00124</strong></div>
+            <div><span>Transaction ID</span><strong>TXN-26-884271</strong></div>
+            <div><span>Started</span><strong>28 Aug 2026</strong></div>
+            <div><span>Current SLA</span><strong>2 working days</strong></div>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <section class="panel">
+            <div class="panel-header"><div><h3>Audit Trail</h3><p>Immutable-style action history for transparency.</p></div></div>
+            <div class="audit-list">
+              <div><time>31 Aug · 14:42</time><p><strong>Mutation assigned</strong><br>Revenue Officer - Ward 12</p></div>
+              <div><time>30 Aug · 11:10</time><p><strong>Registration API verified deed</strong><br>Document hash matched successfully</p></div>
+              <div><time>28 Aug · 16:24</time><p><strong>Citizen submitted registration</strong><br>Digital identity authentication successful</p></div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-header"><div><h3>API Events</h3><p>Illustrative machine-to-machine interoperability.</p></div></div>
+            <pre class="api-log">POST /api/v1/parcel/TN-CHN-00124/mutation
+200 OK
+
+GET /api/v1/ror/TN-CHN-00124
+200 OK
+
+POST /api/v1/tax/sync
+202 ACCEPTED</pre>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <div id="modal" class="modal">
+    <div class="modal-card">
+      <button class="modal-close" id="modalClose">×</button>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    const parcels = [
+        {
+          id: "TN-CHN-00124",
+          owner: "R. Meenakshi",
+          survey: "87/2B",
+          area: "2,450 sq ft",
+          landUse: "Residential",
+          coords: [
+            [13.0405, 80.2332],
+            [13.0405, 80.2343],
+            [13.0412, 80.2343],
+            [13.0412, 80.2332],
+          ],
+          rights: {
+            ror: "Patta No. 11842",
+            ownership: "Freehold",
+            registration: "Doc 2314/2024",
+            encumbrance: "No active encumbrance",
+          },
+          planning: {
+            zone: "Primary Residential",
+            fsi: "2.0",
+            building: "Approved · BP/2025/441",
+            restriction: "None",
+          },
+          fiscal: {
+            tax: "₹18,420 / year",
+            dues: "No dues",
+            valuation: "₹7,850 / sq ft",
+            circle: "Zone 9",
+          },
+          infra: {
+            water: "Connected",
+            sewer: "Connected",
+            power: "TANGEDCO LT",
+            road: "12 m public road",
+          },
+        },
+        {
+          id: "TN-CHN-00341",
+          owner: "K. Aravind",
+          survey: "91/4A",
+          area: "3,100 sq ft",
+          landUse: "Mixed Use",
+          coords: [
+            [13.0414, 80.2328],
+            [13.0414, 80.2339],
+            [13.0422, 80.2339],
+            [13.0422, 80.2328],
+          ],
+          rights: {
+            ror: "Patta No. 12077",
+            ownership: "Joint ownership",
+            registration: "Doc 982/2023",
+            encumbrance: "Mortgage registered",
+          },
+          planning: {
+            zone: "Mixed Residential",
+            fsi: "2.5",
+            building: "Application under review",
+            restriction: "Height restriction",
+          },
+          fiscal: {
+            tax: "₹31,200 / year",
+            dues: "₹2,600 pending",
+            valuation: "₹9,100 / sq ft",
+            circle: "Zone 9",
+          },
+          infra: {
+            water: "Connected",
+            sewer: "Connected",
+            power: "TANGEDCO LT",
+            road: "18 m arterial road",
+          },
+        },
+        {
+          id: "TN-CHN-00522",
+          owner: "S. Prakash",
+          survey: "94/1C",
+          area: "1,820 sq ft",
+          landUse: "Commercial",
+          coords: [
+            [13.0396, 80.2346],
+            [13.0396, 80.2356],
+            [13.0403, 80.2356],
+            [13.0403, 80.2346],
+          ],
+          rights: {
+            ror: "Patta No. 12650",
+            ownership: "Freehold",
+            registration: "Doc 6621/2025",
+            encumbrance: "No active encumbrance",
+          },
+          planning: {
+            zone: "Commercial",
+            fsi: "3.25",
+            building: "Approved · BP/2026/114",
+            restriction: "Advertisement control zone",
+          },
+          fiscal: {
+            tax: "₹44,600 / year",
+            dues: "No dues",
+            valuation: "₹11,500 / sq ft",
+            circle: "Zone 9",
+          },
+          infra: {
+            water: "Connected",
+            sewer: "Connected",
+            power: "TANGEDCO 3-phase",
+            road: "24 m main road",
+          },
+        },
+      ];
+
+      const map = L.map("map", { zoomControl: true }).setView([13.0409, 80.2341], 17);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: "&copy; OpenStreetMap contributors",
+      }).addTo(map);
+
+      const parcelLayer = L.layerGroup().addTo(map);
+      const zoningLayer = L.layerGroup().addTo(map);
+      const utilityLayer = L.layerGroup().addTo(map);
+      const restrictionLayer = L.layerGroup().addTo(map);
+      const polygons = {};
+
+      function popupHtml(p) {
+        return `<div class="map-popup"><strong>${p.id}</strong><small>${p.owner}</small><small>${p.survey} · ${p.landUse}</small></div>`;
+      }
+
+      parcels.forEach((p, i) => {
+        const poly = L.polygon(p.coords, {
+          color: "#176b5b",
+          weight: 2,
+          fillColor: "#4fb89f",
+          fillOpacity: 0.22,
+        }).addTo(parcelLayer);
+        polygons[p.id] = poly;
+        poly.bindPopup(popupHtml(p));
+        poly.on("click", () => selectParcel(p.id, true));
+      });
+
+      L.polygon(
+        [
+          [13.0392, 80.2318],
+          [13.043, 80.2318],
+          [13.043, 80.236],
+          [13.0392, 80.236],
+        ],
+        {
+          color: "#4a72c4",
+          weight: 1,
+          dashArray: "6,6",
+          fillColor: "#7ea2ef",
+          fillOpacity: 0.06,
+        },
+      )
+        .bindTooltip("Planning Zone R2")
+        .addTo(zoningLayer);
+
+      L.polyline(
+        [
+          [13.0393, 80.2322],
+          [13.0426, 80.2356],
+        ],
+        { color: "#3f8ec9", weight: 4, opacity: 0.7 },
+      )
+        .bindTooltip("Underground water main")
+        .addTo(utilityLayer);
+
+      L.polygon(
+        [
+          [13.0416, 80.2345],
+          [13.0425, 80.2345],
+          [13.0425, 80.2354],
+          [13.0416, 80.2354],
+        ],
+        {
+          color: "#bb694c",
+          weight: 2,
+          dashArray: "4,4",
+          fillColor: "#d8805f",
+          fillOpacity: 0.12,
+        },
+      )
+        .bindTooltip("Height Restriction Zone")
+        .addTo(restrictionLayer);
+
+      const tabs = {
+        rightsTab: (p) => [
+          ["Record of Rights", p.rights.ror],
+          ["Ownership Type", p.rights.ownership],
+          ["Last Registration", p.rights.registration],
+          ["Encumbrance", p.rights.encumbrance],
+        ],
+        planningTab: (p) => [
+          ["Planning Zone", p.planning.zone],
+          ["Permissible FSI", p.planning.fsi],
+          ["Building Permission", p.planning.building],
+          ["Restrictions", p.planning.restriction],
+        ],
+        fiscalTab: (p) => [
+          ["Property Tax", p.fiscal.tax],
+          ["Outstanding Dues", p.fiscal.dues],
+          ["Guideline Value", p.fiscal.valuation],
+          ["Tax Zone", p.fiscal.circle],
+        ],
+        infraTab: (p) => [
+          ["Water Supply", p.infra.water],
+          ["Sewerage", p.infra.sewer],
+          ["Electricity", p.infra.power],
+          ["Road Access", p.infra.road],
+        ],
+      };
+
+      function renderRows(target, rows) {
+        document.getElementById(target).innerHTML = rows
+          .map(
+            ([a, b]) =>
+              `<div class="info-row"><span>${a}</span><strong>${b}</strong></div>`,
+          )
+          .join("");
+      }
+      function selectParcel(id, zoom = false) {
+        const p = parcels.find((x) => x.id === id);
+        if (!p) return false;
+        document.getElementById("parcelTitle").textContent = "ULPIN-" + p.id;
+        document.getElementById("ownerName").textContent = p.owner;
+        document.getElementById("surveyNo").textContent = p.survey;
+        document.getElementById("parcelArea").textContent = p.area;
+        document.getElementById("landUse").textContent = p.landUse;
+        Object.keys(tabs).forEach((k) => renderRows(k, tabs[k](p)));
+        Object.entries(polygons).forEach(([pid, poly]) => {
+          poly.setStyle(
+            pid === id
+              ? { color: "#db8b28", weight: 4, fillOpacity: 0.32 }
+              : { color: "#176b5b", weight: 2, fillOpacity: 0.22 },
+          );
+        });
+        if (zoom) {
+          map.fitBounds(polygons[id].getBounds(), { padding: [80, 80] });
+          polygons[id].openPopup();
+        }
+        return true;
+      }
+      selectParcel(parcels[0].id);
+
+      document.querySelectorAll(".tab").forEach((btn) =>
+        btn.addEventListener("click", () => {
+          document
+            .querySelectorAll(".tab")
+            .forEach((b) => b.classList.remove("active"));
+          document
+            .querySelectorAll(".tab-content")
+            .forEach((c) => c.classList.remove("active"));
+          btn.classList.add("active");
+          document.getElementById(btn.dataset.tab).classList.add("active");
+        }),
+      );
+
+      const pageTitles = {
+        mapView: "Parcel Explorer",
+        citizenView: "Citizen Services",
+        adminView: "Admin Dashboard",
+        workflowView: "Workflow Integration",
+      };
+      document.querySelectorAll(".nav-item").forEach((btn) =>
+        btn.addEventListener("click", () => {
+          document
+            .querySelectorAll(".nav-item")
+            .forEach((b) => b.classList.remove("active"));
+          document
+            .querySelectorAll(".view")
+            .forEach((v) => v.classList.remove("active"));
+          btn.classList.add("active");
+          document.getElementById(btn.dataset.section).classList.add("active");
+          document.getElementById("pageTitle").textContent =
+            pageTitles[btn.dataset.section];
+          if (btn.dataset.section === "mapView")
+            setTimeout(() => map.invalidateSize(), 100);
+        }),
+      );
+
+      function doSearch(value) {
+        const q = value.trim().toLowerCase();
+        const p = parcels.find(
+          (x) =>
+            x.id.toLowerCase().includes(q) ||
+            x.owner.toLowerCase().includes(q) ||
+            x.survey.toLowerCase().includes(q),
+        );
+        if (p) {
+          selectParcel(p.id, true);
+          showToast(`Parcel ${p.id} loaded`);
+          return p;
+        }
+        showToast("No demo parcel matched your search");
+      }
+      document
+        .getElementById("searchBtn")
+        .addEventListener("click", () =>
+          doSearch(document.getElementById("parcelSearch").value),
+        );
+      document.getElementById("parcelSearch").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") doSearch(e.target.value);
+      });
+
+      document.querySelectorAll(".layer-toggle").forEach((cb) =>
+        cb.addEventListener("change", () => {
+          const obj = {
+            zoning: zoningLayer,
+            utility: utilityLayer,
+            restriction: restrictionLayer,
+          }[cb.dataset.layer];
+          cb.checked ? obj.addTo(map) : map.removeLayer(obj);
+        }),
+      );
+      document
+        .getElementById("resetMapBtn")
+        .addEventListener("click", () => map.setView([13.0409, 80.2341], 17));
+
+      const integrations = [
+        ["Land Records / RoR", "Connected", "2 min ago"],
+        ["Registration", "Connected", "4 min ago"],
+        ["Town Planning", "Connected", "8 min ago"],
+        ["Property Tax", "Connected", "12 min ago"],
+        ["Utilities", "Connected", "15 min ago"],
+        ["Court / Dispute Records", "Partial", "1 hr ago"],
+      ];
+      document.getElementById("integrationList").innerHTML = integrations
+        .map(
+          (x) => `
+ <div class="integration-item"><div><strong>${x[0]}</strong><br><small>Last sync: ${x[2]}</small></div>
+ <span class="integration-status">${x[1]}</span></div>`,
+        )
+        .join("");
+
+      function showToast(msg) {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.classList.add("show");
+        setTimeout(() => t.classList.remove("show"), 2600);
+      }
+      const modal = document.getElementById("modal"),
+        modalBody = document.getElementById("modalBody");
+      document.getElementById("modalClose").onclick = () =>
+        modal.classList.remove("show");
+
+      const serviceContent = {
+        verify: `<h3>Ownership Verification</h3><p>Enter parcel details to verify the demo Record of Rights and linked registration record.</p>
+ <form class="modal-form" onsubmit="event.preventDefault(); verifyFromModal(this)">
+ <input name="query" placeholder="ULPIN / Survey No." required><button>Verify</button></form>`,
+        transaction: `<h3>Transaction Tracking</h3><p>Example workflow status for transaction <strong>TXN-26-884271</strong>.</p>
+ <div class="info-row"><span>Current Stage</span><strong>Mutation Review</strong></div>
+ <div class="info-row"><span>Department</span><strong>Revenue Department</strong></div>
+ <div class="info-row"><span>Status</span><strong>In Progress</strong></div>`,
+        certificate: `<h3>Unified Land Information Report</h3><p>This demo combines parcel identity, RoR, planning, tax, utility and restriction data into one citizen-readable report.</p>
+ <button onclick="showToast('Demo report generated successfully')" style="border:0;background:#176b5b;color:white;padding:11px 14px;border-radius:9px">Generate Demo Report</button>`,
+        request: `<h3>Raise a Service Request</h3><form class="modal-form" onsubmit="event.preventDefault(); submitRequest()">
+ <select><option>Mutation Request</option><option>RoR Correction</option><option>Map Correction</option><option>Building Permission Query</option></select>
+ <input placeholder="ULPIN" required><textarea rows="4" placeholder="Describe your request"></textarea><button>Submit Request</button></form>`,
+      };
+      document.querySelectorAll(".service-card").forEach((c) =>
+        c.querySelector("button").addEventListener("click", () => {
+          modalBody.innerHTML = serviceContent[c.dataset.service];
+          modal.classList.add("show");
+        }),
+      );
+      window.verifyFromModal = (form) => {
+        const p = doSearch(form.query.value);
+        if (p) {
+          modalBody.innerHTML = `<h3>Verified Parcel</h3><p><strong>${p.id}</strong> is linked with the demo RoR and registration datasets.</p>
+ <div class="info-row"><span>Owner</span><strong>${p.owner}</strong></div><div class="info-row"><span>Survey No.</span><strong>${p.survey}</strong></div>
+ <div class="info-row"><span>Record Status</span><strong>Verified</strong></div>`;
+        }
+      };
+      window.submitRequest = () => {
+        modal.classList.remove("show");
+        showToast("Demo request submitted · REQ-2026-1108");
+      };
+
+      document.getElementById("citizenSearchBtn").addEventListener("click", () => {
+        const p = doSearch(document.getElementById("citizenSearch").value);
+        if (p) {
+          document.querySelector('[data-section="mapView"]').click();
+        }
+      });
+      document
+        .getElementById("roleSelect")
+        .addEventListener("change", (e) =>
+          showToast(`Role switched to ${e.target.value}`),
+        );
+
+  </script>
+</body>
+</html>
