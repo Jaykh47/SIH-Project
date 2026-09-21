@@ -28,12 +28,28 @@ function makeDemoToken(userData) {
 }
 
 function localDemoLogin(email, password) {
+  const normEmail = (email || '').toLowerCase().trim();
   const match = DEMO_ACCOUNTS.find(
-    a => a.email.toLowerCase() === email.toLowerCase() && a.password === password
+    a => a.email.toLowerCase() === normEmail && a.password === password
   );
-  if (!match) throw new Error('Invalid email or password.');
-  const { password: _pw, ...userData } = match;
-  return { token: makeDemoToken(userData), user: userData };
+  if (match) {
+    const { password: _pw, ...userData } = match;
+    return { token: makeDemoToken(userData), user: userData };
+  }
+
+  // Check locally registered accounts in localStorage (offline demo)
+  try {
+    const localUsers = JSON.parse(localStorage.getItem('landstack_registered_users') || '[]');
+    const regMatch = localUsers.find(
+      u => (u.email || '').toLowerCase() === normEmail && u.password === password
+    );
+    if (regMatch) {
+      const { password: _pw, ...userData } = regMatch;
+      return { token: makeDemoToken(userData), user: userData };
+    }
+  } catch {}
+
+  throw new Error('Invalid email or password.');
 }
 
 // ── AuthProvider (default export — satisfies Fast Refresh) ──────────────────
@@ -50,11 +66,14 @@ export default function AuthProvider({ children }) {
     setLoading(false);
   }, []);
 
-  const login = async (email, password) => {
+  const login = async (email, password, extraData = {}) => {
     try {
       // Always attempt real backend first
-      const res = await authAPI.login(email, password);
+      const res = await authAPI.login(email, password, extraData);
       const { token, user: userData } = res.data.data;
+      if (extraData && typeof extraData === 'object') {
+        Object.assign(userData, extraData);
+      }
       localStorage.setItem('landstack_token', token);
       localStorage.setItem('landstack_user', JSON.stringify(userData));
       localStorage.removeItem('landstack_demo_mode');
@@ -73,6 +92,9 @@ export default function AuthProvider({ children }) {
       if (isOffline) {
         // Demo-mode fallback — authenticate locally
         const { token, user: userData } = localDemoLogin(email, password);
+        if (extraData && typeof extraData === 'object') {
+          Object.assign(userData, extraData);
+        }
         localStorage.setItem('landstack_token', token);
         localStorage.setItem('landstack_user', JSON.stringify(userData));
         localStorage.setItem('landstack_demo_mode', 'true');
@@ -81,6 +103,60 @@ export default function AuthProvider({ children }) {
       }
 
       // Real error from the backend (e.g. wrong password) — re-throw
+      throw err;
+    }
+  };
+
+  const register = async (userData) => {
+    try {
+      const res = await authAPI.register(userData);
+      const { token, user: userProfile } = res.data.data;
+      localStorage.setItem('landstack_token', token);
+      localStorage.setItem('landstack_user', JSON.stringify(userProfile));
+      localStorage.removeItem('landstack_demo_mode');
+      setUser(userProfile);
+      return userProfile;
+    } catch (err) {
+      const status = err.response?.status;
+      const isOffline =
+        !err.response ||
+        err.code === 'ERR_NETWORK' ||
+        err.isBackendOffline ||
+        status === 502 || status === 503 || status === 504;
+
+      if (isOffline) {
+        // Save to locally registered users for instant demo-mode login
+        const localUser = {
+          userId: Date.now(),
+          email: userData.email,
+          fullName: userData.fullName || userData.name || 'Citizen User',
+          roleName: 'citizen',
+          phone: userData.phone || '',
+          aadhaar: userData.aadhaar || '',
+          state: userData.state || '',
+          stateSlug: userData.stateSlug || '',
+          district: userData.district || '',
+          city: userData.city || '',
+          pincode: userData.pincode || '',
+          department: null,
+          password: userData.password
+        };
+
+        const existing = JSON.parse(localStorage.getItem('landstack_registered_users') || '[]');
+        // Update or push
+        const filtered = existing.filter(u => (u.email || '').toLowerCase() !== localUser.email.toLowerCase());
+        filtered.push(localUser);
+        localStorage.setItem('landstack_registered_users', JSON.stringify(filtered));
+
+        const { password: _pw, ...profile } = localUser;
+        const token = makeDemoToken(profile);
+        localStorage.setItem('landstack_token', token);
+        localStorage.setItem('landstack_user', JSON.stringify(profile));
+        localStorage.setItem('landstack_demo_mode', 'true');
+        setUser(profile);
+        return profile;
+      }
+
       throw err;
     }
   };
@@ -98,7 +174,7 @@ export default function AuthProvider({ children }) {
   const isDemoMode = () => localStorage.getItem('landstack_demo_mode') === 'true';
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading, isOfficer, isAdmin, isCitizen, isDemoMode }}>
+    <AuthContext.Provider value={{ user, login, register, logout, loading, isOfficer, isAdmin, isCitizen, isDemoMode }}>
       {children}
     </AuthContext.Provider>
   );

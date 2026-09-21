@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuthContext';
+import { useTheme } from '../hooks/useTheme';
+import ThemeToggle from '../components/ThemeToggle';
 import { Mail, Lock, Eye, EyeOff, AlertTriangle, X, Shield, Zap } from 'lucide-react';
 
 const DEMO_USERS = [
@@ -13,32 +15,38 @@ const DEMO_USERS = [
 ];
 
 /* ── Green gradient background ───────────────────────────────── */
-function BgPreview() {
+function BgPreview({ isDark }) {
   return (
     <div style={{
       position: 'fixed', inset: 0, zIndex: 0,
-      background: 'linear-gradient(135deg, #e8f5ee 0%, #f0fdf4 35%, #f8faf9 65%, #e6f0ea 100%)',
+      background: isDark
+        ? 'linear-gradient(135deg, #070d0a 0%, #0d1712 35%, #050a08 100%)'
+        : 'linear-gradient(135deg, #e8f5ee 0%, #f0fdf4 35%, #f8faf9 65%, #e6f0ea 100%)',
       overflow: 'hidden',
     }}>
       <div style={{
         position: 'absolute', top: '-15%', left: '-8%',
         width: 700, height: 700,
-        background: 'radial-gradient(circle, rgba(45,106,79,0.15) 0%, transparent 65%)',
+        background: isDark
+          ? 'radial-gradient(circle, rgba(82,183,136,0.12) 0%, transparent 65%)'
+          : 'radial-gradient(circle, rgba(45,106,79,0.15) 0%, transparent 65%)',
         borderRadius: '50%',
       }} />
       <div style={{
         position: 'absolute', bottom: '-15%', right: '-8%',
         width: 600, height: 600,
-        background: 'radial-gradient(circle, rgba(82,183,136,0.12) 0%, transparent 65%)',
+        background: isDark
+          ? 'radial-gradient(circle, rgba(45,106,79,0.1) 0%, transparent 65%)'
+          : 'radial-gradient(circle, rgba(82,183,136,0.12) 0%, transparent 65%)',
         borderRadius: '50%',
       }} />
       {/* Blurred hero text in background */}
       <div style={{
         position: 'absolute', top: '18%', left: '10%',
-        filter: 'blur(5px)', opacity: 0.25, userSelect: 'none', pointerEvents: 'none',
+        filter: 'blur(5px)', opacity: isDark ? 0.15 : 0.25, userSelect: 'none', pointerEvents: 'none',
       }}>
-        <div style={{ fontFamily: 'Outfit, sans-serif', fontSize: 54, fontWeight: 800, color: '#0f172a', lineHeight: 1.1 }}>
-          One smart platform<br /><span style={{ color: 'var(--sb-600)' }}>for every parcel.</span>
+        <div style={{ fontFamily: 'Outfit, sans-serif', fontSize: 54, fontWeight: 800, color: isDark ? '#f1f5f9' : '#0f172a', lineHeight: 1.1 }}>
+          One smart platform<br /><span style={{ color: 'var(--sb-500)' }}>for every parcel.</span>
         </div>
       </div>
     </div>
@@ -53,6 +61,7 @@ export default function LoginPage() {
   const [loading,  setLoading]  = useState(false);
 
   const { login }  = useAuth();
+  const { isDark } = useTheme();
   const navigate   = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -92,7 +101,7 @@ export default function LoginPage() {
       padding: '24px 16px',
       position: 'relative',
     }}>
-      <BgPreview />
+      <BgPreview isDark={isDark} />
 
       {/* ── Login card ────────────────────────────────────────── */}
       <div className="sb-login-card animate-fadeInUp" style={{ maxWidth: 440 }}>
@@ -107,20 +116,23 @@ export default function LoginPage() {
               fontSize: 20, boxShadow: '0 2px 8px rgba(45,106,79,0.3)',
             }}>🌿</div>
             <div>
-              <div style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 800, fontSize: 16, color: '#0f172a' }}>
+              <div style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 800, fontSize: 16, color: isDark ? '#f1f5f9' : '#0f172a' }}>
                 SmartBhumi
               </div>
-              <div style={{ fontSize: 10, color: '#6b7280', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              <div style={{ fontSize: 10, color: isDark ? '#94a3b8' : '#6b7280', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                 Secure Sign In
               </div>
             </div>
           </div>
-          <button
-            onClick={() => navigate('/')}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9ca3af', padding: 4, borderRadius: 6 }}
-          >
-            <X size={18} />
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <ThemeToggle />
+            <button
+              onClick={() => navigate('/')}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9ca3af', padding: 4, borderRadius: 6 }}
+            >
+              <X size={18} />
+            </button>
+          </div>
         </div>
 
         {/* ── Card body ───────────────────────────────────────── */}
@@ -207,14 +219,14 @@ export default function LoginPage() {
           {/* ── Demo accounts — always visible ──────────────────── */}
           <div style={{
             marginTop: 20,
-            background: 'linear-gradient(135deg, #f0fdf4, #f8faf9)',
-            border: '1px solid rgba(45,106,79,0.15)',
+            background: isDark ? '#14221a' : 'linear-gradient(135deg, #f0fdf4, #f8faf9)',
+            border: isDark ? '1px solid rgba(82,183,136,0.25)' : '1px solid rgba(45,106,79,0.15)',
             borderRadius: 12,
             padding: '14px 16px',
           }}>
             <div style={{
               display: 'flex', alignItems: 'center', gap: 6,
-              fontSize: 11, fontWeight: 700, color: 'var(--sb-700)',
+              fontSize: 11, fontWeight: 700, color: isDark ? '#52b788' : 'var(--sb-700)',
               textTransform: 'uppercase', letterSpacing: '0.08em',
               marginBottom: 12,
             }}>

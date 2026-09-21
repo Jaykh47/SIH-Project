@@ -43,7 +43,24 @@ function validateQuery(schema) {
 const schemas = {
   login: z.object({
     email: z.string().email(),
-    password: z.string().min(6)
+    password: z.string().min(6),
+    loginAadhaar: z.string().optional(),
+    aadhaar: z.string().optional(),
+    otp: z.string().optional()
+  }),
+
+  register: z.object({
+    name: z.string().min(3).max(100).optional(),
+    fullName: z.string().min(3).max(100).optional(),
+    email: z.string().email(),
+    password: z.string().min(8),
+    phone: z.string().optional(),
+    aadhaar: z.string().optional(),
+    state: z.string().optional(),
+    stateSlug: z.string().optional(),
+    district: z.string().optional(),
+    city: z.string().optional(),
+    pincode: z.string().optional()
   }),
 
   parcelSearch: z.object({

@@ -130,4 +130,157 @@ async function getMe(req, res) {
   }
 }
 
-module.exports = { login, getMe };
+// In-memory OTP cache with TTL (5 minutes)
+const otpStore = new Map();
+
+/**
+ * POST /api/auth/send-otp
+ * Generate 4-digit OTP and send to user email
+ */
+async function sendOtp(req, res) {
+  const { email } = req.body;
+  if (!email) {
+    return res.status(400).json({ success: false, error: 'Email address is required.' });
+  }
+
+  const normalizedEmail = email.trim().toLowerCase();
+  const otp = String(Math.floor(1000 + Math.random() * 9000));
+  const expiresAt = Date.now() + 5 * 60 * 1000; // 5 minutes
+
+  otpStore.set(normalizedEmail, { otp, expiresAt });
+  console.log(`\x1b[32m[OtpService] OTP for ${normalizedEmail}: ${otp}\x1b[0m`);
+
+  return res.json({
+    success: true,
+    message: 'OTP sent successfully to email.',
+    otp // included for testing/demo convenience
+  });
+}
+
+/**
+ * POST /api/auth/verify-otp
+ * Verify 4-digit OTP entered by user
+ */
+async function verifyOtp(req, res) {
+  const { email, otp } = req.body;
+  if (!email || !otp) {
+    return res.status(400).json({ success: false, error: 'Email and OTP are required.' });
+  }
+
+  const normalizedEmail = email.trim().toLowerCase();
+  const record = otpStore.get(normalizedEmail);
+
+  if (!record) {
+    return res.status(400).json({ success: false, error: 'No OTP requested for this email or OTP expired.' });
+  }
+
+  if (Date.now() > record.expiresAt) {
+    otpStore.delete(normalizedEmail);
+    return res.status(400).json({ success: false, error: 'OTP has expired. Please request a new one.' });
+  }
+
+  if (record.otp !== String(otp).trim()) {
+    return res.status(400).json({ success: false, error: 'Invalid OTP code. Please try again.' });
+  }
+
+  // OTP verified successfully
+  otpStore.delete(normalizedEmail);
+  return res.json({
+    success: true,
+    verified: true,
+    message: 'OTP verified successfully.'
+  });
+}
+
+/**
+ * POST /api/auth/register
+ * Register a new citizen account
+ */
+async function register(req, res) {
+  const body = req.validatedBody || req.body;
+  const fullName = (body.fullName || body.name || '').trim();
+  const email = (body.email || '').trim().toLowerCase();
+  const password = body.password;
+  const phone = (body.phone || '').trim();
+  const aadhaar = (body.aadhaar || '').trim();
+  const state = (body.state || '').trim();
+  const district = (body.district || '').trim();
+  const city = (body.city || '').trim();
+  const pincode = (body.pincode || '').trim();
+
+  if (!fullName || !email || !password) {
+    return res.status(400).json({ success: false, error: 'Name, email, and password are required.' });
+  }
+
+  try {
+    // Check if user exists
+    const existing = await pool.query('SELECT user_id FROM users WHERE email = $1', [email]);
+    if (existing.rows.length > 0) {
+      return res.status(409).json({ success: false, error: 'An account with this email already exists.' });
+    }
+
+    // Hash password
+    const saltRounds = parseInt(process.env.BCRYPT_ROUNDS || '10', 10);
+    const passwordHash = await bcrypt.hash(password, saltRounds);
+
+    // Get citizen role_id
+    const roleRes = await pool.query("SELECT role_id FROM roles WHERE role_name = 'citizen'");
+    const roleId = roleRes.rows.length > 0 ? roleRes.rows[0].role_id : 2;
+
+    // Insert user
+    const insertRes = await pool.query(
+      `INSERT INTO users (email, password_hash, full_name, phone, role_id)
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING user_id, email, full_name, role_id`,
+      [email, passwordHash, fullName, phone, roleId]
+    );
+
+    const newUser = insertRes.rows[0];
+
+    // Generate JWT token
+    const payload = {
+      userId: newUser.user_id,
+      email: newUser.email,
+      fullName: newUser.full_name,
+      roleName: 'citizen',
+      department: null
+    };
+
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+
+    // Write audit log
+    await writeAuditLog({
+      userId: newUser.user_id,
+      action: 'REGISTER',
+      tableName: 'users',
+      recordId: newUser.user_id,
+      ipAddress: req.ip
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: 'Account registered successfully.',
+      data: {
+        token,
+        user: {
+          userId: newUser.user_id,
+          email: newUser.email,
+          fullName: newUser.full_name,
+          roleName: 'citizen',
+          phone,
+          aadhaar,
+          state,
+          district,
+          city,
+          pincode
+        }
+      }
+    });
+  } catch (err) {
+    console.error('[AUTH] Registration error:', err);
+    return res.status(500).json({ success: false, error: 'Registration failed. Please try again later.' });
+  }
+}
+
+module.exports = { login, getMe, register, sendOtp, verifyOtp };
+

@@ -109,10 +109,10 @@ export default function AlertsPage() {
               <Bell size={20} color="#059669" />
             </div>
             <div>
-              <h1 style={{ fontSize: 24, fontWeight: 800, margin: 0, color: '#064e3b' }}>
+              <h1 style={{ fontSize: 24, fontWeight: 800, margin: 0, color: 'var(--color-text-primary)' }}>
                 Anomaly & Integrity Alerts
               </h1>
-              <p style={{ margin: '2px 0 0', fontSize: 13, color: '#475569' }}>
+              <p style={{ margin: '2px 0 0', fontSize: 13, color: 'var(--color-text-muted)' }}>
                 Human-in-the-loop verification center for AI satellite change detections and inter-departmental data conflicts.
               </p>
             </div>
@@ -132,8 +132,8 @@ export default function AlertsPage() {
 
       {/* HITL Governance Banner */}
       <div style={{
-        background: '#ecfdf5',
-        border: '1px solid #a7f3d0',
+        background: 'rgba(52, 211, 153, 0.12)',
+        border: '1px solid rgba(52, 211, 153, 0.25)',
         borderRadius: 12,
         padding: '14px 20px',
         marginBottom: 24,
@@ -143,10 +143,10 @@ export default function AlertsPage() {
         boxShadow: 'var(--shadow-card)'
       }}>
         <ShieldCheck size={28} color="#059669" style={{ flexShrink: 0 }} />
-        <div style={{ fontSize: 13, color: '#334155' }}>
-          <strong style={{ color: '#064e3b' }}>SIH Explainable AI Governance Policy:</strong>{' '}
+        <div style={{ fontSize: 13, color: 'var(--color-text-secondary)' }}>
+          <strong style={{ color: 'var(--color-brand-500)' }}>SIH Explainable AI Governance Policy:</strong>{' '}
           Computer vision models and automated cross-checks flag candidate anomalies.
-          By statutory mandate, <strong style={{ color: '#0f172a' }}>no legal title, land record, or registry is altered automatically</strong>.
+          By statutory mandate, <strong style={{ color: 'var(--color-text-primary)' }}>no legal title, land record, or registry is altered automatically</strong>.
           Every alert requires manual officer verification with logged audit justifications.
         </div>
       </div>
@@ -189,7 +189,7 @@ export default function AlertsPage() {
       </div>
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: 12, borderBottom: '1px solid rgba(5, 150, 105, 0.15)', marginBottom: 20 }}>
+      <div style={{ display: 'flex', gap: 12, borderBottom: '1px solid var(--color-border)', marginBottom: 20 }}>
         <button
           onClick={() => setActiveTab('ai')}
           style={{
@@ -199,15 +199,15 @@ export default function AlertsPage() {
             fontSize: 14,
             fontWeight: activeTab === 'ai' ? 700 : 500,
             cursor: 'pointer',
-            color: activeTab === 'ai' ? '#064e3b' : '#64748b',
-            borderBottom: activeTab === 'ai' ? '3px solid #059669' : '3px solid transparent',
+            color: activeTab === 'ai' ? 'var(--color-brand-500)' : 'var(--color-text-muted)',
+            borderBottom: activeTab === 'ai' ? '3px solid var(--color-brand-500)' : '3px solid transparent',
             display: 'flex',
             alignItems: 'center',
             gap: 8,
             transition: 'all 0.15s'
           }}
         >
-          <AlertTriangle size={16} color={activeTab === 'ai' ? '#059669' : '#64748b'} />
+          <AlertTriangle size={16} color={activeTab === 'ai' ? 'var(--color-brand-500)' : 'var(--color-text-muted)'} />
           AI Satellite Alerts ({aiAlerts.length})
         </button>
 
@@ -220,15 +220,15 @@ export default function AlertsPage() {
             fontSize: 14,
             fontWeight: activeTab === 'quality' ? 700 : 500,
             cursor: 'pointer',
-            color: activeTab === 'quality' ? '#064e3b' : '#64748b',
-            borderBottom: activeTab === 'quality' ? '3px solid #059669' : '3px solid transparent',
+            color: activeTab === 'quality' ? 'var(--color-brand-500)' : 'var(--color-text-muted)',
+            borderBottom: activeTab === 'quality' ? '3px solid var(--color-brand-500)' : '3px solid transparent',
             display: 'flex',
             alignItems: 'center',
             gap: 8,
             transition: 'all 0.15s'
           }}
         >
-          <ShieldCheck size={16} color={activeTab === 'quality' ? '#059669' : '#64748b'} />
+          <ShieldCheck size={16} color={activeTab === 'quality' ? 'var(--color-brand-500)' : 'var(--color-text-muted)'} />
           Data Quality Discrepancies ({qualityAlerts.length})
         </button>
       </div>
@@ -305,17 +305,17 @@ export default function AlertsPage() {
                       </div>
                     </td>
                     <td>
-                      <div style={{ fontWeight: 600, color: '#0f172a' }}>
+                      <div style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>
                         {alert.change_type?.replace(/_/g, ' ').toUpperCase()}
                       </div>
-                      <div style={{ fontSize: 11, color: '#475569', maxWidth: 300, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <div style={{ fontSize: 11, color: 'var(--color-text-muted)', maxWidth: 300, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {alert.details?.description || 'Satellite sensor anomaly flagged.'}
                       </div>
                     </td>
                     <td>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                         <div style={{
-                          flex: 1, height: 6, width: 60, background: '#e2e8f0', borderRadius: 3, overflow: 'hidden'
+                          flex: 1, height: 6, width: 60, background: 'var(--color-surface-700)', borderRadius: 3, overflow: 'hidden'
                         }}>
                           <div style={{
                             width: `${(alert.confidence || 0) * 100}%`,
@@ -324,16 +324,16 @@ export default function AlertsPage() {
                             borderRadius: 3
                           }} />
                         </div>
-                        <span style={{ fontSize: 12, fontWeight: 700, color: '#0f172a' }}>
+                        <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-text-primary)' }}>
                           {Math.round((alert.confidence || 0) * 100)}%
                         </span>
                       </div>
                     </td>
                     <td>
-                      <div style={{ fontSize: 13, color: '#0f172a', fontWeight: 500 }}>
+                      <div style={{ fontSize: 13, color: 'var(--color-text-primary)', fontWeight: 500 }}>
                         {alert.detected_at ? new Date(alert.detected_at).toLocaleDateString() : '—'}
                       </div>
-                      <div style={{ fontSize: 11, color: '#64748b' }}>
+                      <div style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>
                         {alert.detected_at ? new Date(alert.detected_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
                       </div>
                     </td>
@@ -353,8 +353,7 @@ export default function AlertsPage() {
                     <td style={{ textAlign: 'right' }}>
                       <div style={{ display: 'inline-flex', gap: 8 }}>
                         <button
-                          className="btn btn-ghost"
-                          style={{ padding: '4px 8px', fontSize: 12 }}
+                          className="btn btn-table-action"
                           onClick={() => navigate(`/parcels/${alert.ulpin}`)}
                           title="View parcel on map"
                         >
@@ -429,10 +428,10 @@ export default function AlertsPage() {
                     </td>
                     <td>{getSeverityBadge(alert.severity)}</td>
                     <td>
-                      <div style={{ fontWeight: 600, color: '#0f172a' }}>
+                      <div style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>
                         {alert.alert_type?.replace(/_/g, ' ').toUpperCase()}
                       </div>
-                      <div style={{ fontSize: 12, color: '#475569' }}>
+                      <div style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>
                         {alert.description}
                       </div>
                     </td>
@@ -461,8 +460,7 @@ export default function AlertsPage() {
                     <td style={{ textAlign: 'right' }}>
                       <div style={{ display: 'inline-flex', gap: 8 }}>
                         <button
-                          className="btn btn-ghost"
-                          style={{ padding: '4px 8px', fontSize: 12 }}
+                          className="btn btn-table-action"
                           onClick={() => navigate(`/parcels/${alert.ulpin}`)}
                           title="Inspect parcel"
                         >
@@ -501,25 +499,25 @@ export default function AlertsPage() {
           zIndex: 9999, padding: 20
         }}>
           <div className="glass-card" style={{
-            background: '#ffffff',
-            border: '1px solid rgba(5, 150, 105, 0.2)',
+            background: 'var(--color-surface-800)',
+            border: '1px solid var(--color-border)',
             borderRadius: 16,
             width: '100%',
             maxWidth: 520,
             overflow: 'hidden',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.15)'
+            boxShadow: 'var(--shadow-elevated)'
           }}>
             <div style={{
               padding: '16px 20px',
-              borderBottom: '1px solid #f1f5f9',
+              borderBottom: '1px solid var(--color-border)',
               display: 'flex', justifyContent: 'space-between', alignItems: 'center'
             }}>
-              <div style={{ fontSize: 16, fontWeight: 800, color: '#064e3b' }}>
+              <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--color-text-primary)' }}>
                 Officer Sign-Off: {actionType.toUpperCase()} Alert
               </div>
               <button
                 onClick={() => setSelectedAlert(null)}
-                style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}
+                style={{ background: 'none', border: 'none', color: 'var(--color-text-muted)', cursor: 'pointer' }}
               >
                 <X size={18} />
               </button>
@@ -527,15 +525,15 @@ export default function AlertsPage() {
 
             <form onSubmit={handleAction} style={{ padding: 20 }}>
               <div style={{
-                background: '#f0fdf4',
-                border: '1px solid #d1fae5',
+                background: 'var(--color-surface-700)',
+                border: '1px solid var(--color-border)',
                 borderRadius: 8,
                 padding: 14,
                 marginBottom: 16
               }}>
-                <div style={{ fontSize: 12, color: '#065f46', fontWeight: 600 }}>Target Parcel:</div>
-                <div style={{ fontSize: 15, fontWeight: 800, color: '#059669' }}>{selectedAlert.ulpin}</div>
-                <div style={{ fontSize: 13, color: '#334155', marginTop: 4 }}>
+                <div style={{ fontSize: 12, color: 'var(--color-text-brand)', fontWeight: 600 }}>Target Parcel:</div>
+                <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--color-brand-500)' }}>{selectedAlert.ulpin}</div>
+                <div style={{ fontSize: 13, color: 'var(--color-text-secondary)', marginTop: 4 }}>
                   {selectedAlert.change_type || selectedAlert.alert_type}
                 </div>
               </div>
@@ -544,7 +542,7 @@ export default function AlertsPage() {
                 <div style={{
                   background: 'rgba(239,68,68,0.1)',
                   border: '1px solid rgba(239,68,68,0.3)',
-                  color: '#dc2626',
+                  color: '#ef4444',
                   padding: '10px 14px',
                   borderRadius: 8,
                   fontSize: 13,
@@ -555,7 +553,7 @@ export default function AlertsPage() {
               )}
 
               <div style={{ marginBottom: 16 }}>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#065f46', marginBottom: 6 }}>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'var(--color-text-brand)', marginBottom: 6 }}>
                   Officer Reason / Justification Notes (Mandatory for SIH Audit Log):
                 </label>
                 <textarea

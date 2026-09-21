@@ -74,10 +74,10 @@ export default function WorkflowsPage() {
               Live Simulation
             </span>
           </div>
-          <h1 style={{ margin: '8px 0 4px', fontSize: 24, fontWeight: 800, color: 'var(--sb-800)', fontFamily: 'Outfit, sans-serif' }}>
+          <h1 style={{ margin: '8px 0 4px', fontSize: 24, fontWeight: 800, color: 'var(--color-text-primary)', fontFamily: 'Outfit, sans-serif' }}>
             Inter-Department Workflow Integration
           </h1>
-          <p style={{ margin: 0, fontSize: 13, color: '#64748b' }}>
+          <p style={{ margin: 0, fontSize: 13, color: 'var(--color-text-muted)' }}>
             Cross-departmental pipeline linking Registration (IGRS) ➔ Mutation (Revenue) ➔ Property Tax (Municipal Corporation).
           </p>
         </div>
@@ -104,19 +104,19 @@ export default function WorkflowsPage() {
 
       {/* ── Visual 5-Step Pipeline Card ── */}
       <div style={{
-        background: '#ffffff', border: '1px solid rgba(5,150,105,0.15)',
-        borderRadius: 16, padding: '24px 28px', boxShadow: '0 4px 20px rgba(0,0,0,0.04)'
+        background: 'var(--color-surface-800)', border: '1px solid var(--color-border)',
+        borderRadius: 16, padding: '24px 28px', boxShadow: 'var(--shadow-card)'
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
           <div>
-            <span style={{ fontSize: 11, fontWeight: 700, color: '#047857', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-brand)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
               Transaction Life-cycle
             </span>
-            <h3 style={{ margin: '2px 0 0', fontSize: 17, fontWeight: 700, color: '#0f172a' }}>
+            <h3 style={{ margin: '2px 0 0', fontSize: 17, fontWeight: 700, color: 'var(--color-text-primary)' }}>
               Title Transfer & Autonomous Multi-System Synchronization
             </h3>
           </div>
-          <div style={{ fontSize: 12, color: '#64748b' }}>
+          <div style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>
             Stage {activeStepIndex + 1} of {steps.length}
           </div>
         </div>
@@ -131,24 +131,24 @@ export default function WorkflowsPage() {
               <React.Fragment key={s.n}>
                 <div style={{
                   display: 'flex', alignItems: 'center', gap: 10,
-                  background: isActive ? '#ecfdf5' : isDone ? '#f8fafc' : '#ffffff',
-                  border: `1.5px solid ${isActive ? '#10b981' : isDone ? '#a7f3d0' : '#e2e8f0'}`,
+                  background: isActive ? 'rgba(52,211,153,0.15)' : isDone ? 'var(--color-surface-700)' : 'var(--color-surface-800)',
+                  border: `1.5px solid ${isActive ? 'var(--color-brand-500)' : isDone ? 'rgba(52,211,153,0.3)' : 'var(--color-border)'}`,
                   borderRadius: 12, padding: '10px 14px', minWidth: 175, flex: 1
                 }}>
                   <div style={{
                     width: 28, height: 28, borderRadius: '50%',
-                    background: isDone ? '#059669' : isActive ? '#10b981' : '#f1f5f9',
-                    color: isDone || isActive ? '#ffffff' : '#64748b',
+                    background: isDone ? '#059669' : isActive ? '#10b981' : 'var(--color-surface-700)',
+                    color: isDone || isActive ? '#ffffff' : 'var(--color-text-muted)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontSize: 12, fontWeight: 800, flexShrink: 0
                   }}>
                     {isDone ? '✓' : s.n}
                   </div>
                   <div>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: isActive ? '#064e3b' : isDone ? '#0f172a' : '#64748b' }}>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: isActive ? 'var(--color-brand-500)' : isDone ? 'var(--color-text-primary)' : 'var(--color-text-muted)' }}>
                       {s.label}
                     </div>
-                    <div style={{ fontSize: 10, color: '#64748b', marginTop: 1 }}>
+                    <div style={{ fontSize: 10, color: 'var(--color-text-muted)', marginTop: 1 }}>
                       {s.sub}
                     </div>
                   </div>
@@ -157,7 +157,7 @@ export default function WorkflowsPage() {
                 {idx < steps.length - 1 && (
                   <div style={{
                     width: 20, height: 2, flexShrink: 0,
-                    background: idx < activeStepIndex ? '#10b981' : '#e2e8f0'
+                    background: idx < activeStepIndex ? 'var(--color-brand-500)' : 'var(--color-border)'
                   }} />
                 )}
               </React.Fragment>
@@ -168,29 +168,29 @@ export default function WorkflowsPage() {
         {/* Transaction Metadata Grid */}
         <div style={{
           display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-          gap: 12, marginTop: 20, paddingTop: 18, borderTop: '1px solid #f1f5f9'
+          gap: 12, marginTop: 20, paddingTop: 18, borderTop: '1px solid var(--color-border)'
         }}>
-          <div style={{ background: '#f8fafc', padding: 12, borderRadius: 10, border: '1px solid #e2e8f0' }}>
-            <span style={{ fontSize: 10, color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>ULPIN Identifier</span>
-            <strong style={{ display: 'block', fontSize: 13, color: '#059669', fontFamily: 'monospace', marginTop: 3 }}>
+          <div style={{ background: 'var(--color-surface-700)', padding: 12, borderRadius: 10, border: '1px solid var(--color-border)' }}>
+            <span style={{ fontSize: 10, color: 'var(--color-text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>ULPIN Identifier</span>
+            <strong style={{ display: 'block', fontSize: 13, color: 'var(--color-brand-500)', fontFamily: 'monospace', marginTop: 3 }}>
               WB-DGP-00000013
             </strong>
           </div>
-          <div style={{ background: '#f8fafc', padding: 12, borderRadius: 10, border: '1px solid #e2e8f0' }}>
-            <span style={{ fontSize: 10, color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>Transaction ID</span>
-            <strong style={{ display: 'block', fontSize: 13, color: '#0f172a', fontFamily: 'monospace', marginTop: 3 }}>
+          <div style={{ background: 'var(--color-surface-700)', padding: 12, borderRadius: 10, border: '1px solid var(--color-border)' }}>
+            <span style={{ fontSize: 10, color: 'var(--color-text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>Transaction ID</span>
+            <strong style={{ display: 'block', fontSize: 13, color: 'var(--color-text-primary)', fontFamily: 'monospace', marginTop: 3 }}>
               TXN-2026-WB-884271
             </strong>
           </div>
-          <div style={{ background: '#f8fafc', padding: 12, borderRadius: 10, border: '1px solid #e2e8f0' }}>
-            <span style={{ fontSize: 10, color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>Started On</span>
-            <strong style={{ display: 'block', fontSize: 13, color: '#0f172a', marginTop: 3 }}>
+          <div style={{ background: 'var(--color-surface-700)', padding: 12, borderRadius: 10, border: '1px solid var(--color-border)' }}>
+            <span style={{ fontSize: 10, color: 'var(--color-text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>Started On</span>
+            <strong style={{ display: 'block', fontSize: 13, color: 'var(--color-text-primary)', marginTop: 3 }}>
               28 Aug 2026 · 16:24
             </strong>
           </div>
-          <div style={{ background: '#f8fafc', padding: 12, borderRadius: 10, border: '1px solid #e2e8f0' }}>
-            <span style={{ fontSize: 10, color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>Statutory SLA</span>
-            <strong style={{ display: 'block', fontSize: 13, color: '#047857', marginTop: 3 }}>
+          <div style={{ background: 'var(--color-surface-700)', padding: 12, borderRadius: 10, border: '1px solid var(--color-border)' }}>
+            <span style={{ fontSize: 10, color: 'var(--color-text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>Statutory SLA</span>
+            <strong style={{ display: 'block', fontSize: 13, color: 'var(--color-text-brand)', marginTop: 3 }}>
               2 Working Days Remaining
             </strong>
           </div>
@@ -201,8 +201,8 @@ export default function WorkflowsPage() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: 20 }}>
         {/* Audit Trail */}
         <div style={{
-          background: '#ffffff', border: '1px solid rgba(5,150,105,0.15)',
-          borderRadius: 16, padding: '20px 24px', boxShadow: '0 4px 20px rgba(0,0,0,0.04)'
+          background: 'var(--color-surface-800)', border: '1px solid var(--color-border)',
+          borderRadius: 16, padding: '20px 24px', boxShadow: 'var(--shadow-card)'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
             <div style={{
@@ -212,10 +212,10 @@ export default function WorkflowsPage() {
               <ShieldCheck size={18} color="#059669" />
             </div>
             <div>
-              <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#0f172a' }}>
+              <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: 'var(--color-text-primary)' }}>
                 Immutable Audit Trail
               </h3>
-              <p style={{ margin: 0, fontSize: 11, color: '#64748b' }}>
+              <p style={{ margin: 0, fontSize: 11, color: 'var(--color-text-muted)' }}>
                 Cryptographic transaction history and officer verification log
               </p>
             </div>
@@ -225,15 +225,15 @@ export default function WorkflowsPage() {
             {steps.filter(s => s.status !== 'pending').map((s) => (
               <div key={s.n} style={{
                 display: 'flex', gap: 12, paddingBottom: 12,
-                borderBottom: '1px solid #f1f5f9'
+                borderBottom: '1px solid var(--color-border)'
               }}>
-                <div style={{ minWidth: 80, fontSize: 11, color: '#64748b', fontWeight: 500 }}>
+                <div style={{ minWidth: 80, fontSize: 11, color: 'var(--color-text-muted)', fontWeight: 500 }}>
                   {s.time}
                 </div>
                 <div>
-                  <strong style={{ fontSize: 12, color: '#0f172a' }}>{s.label}</strong>
-                  <div style={{ fontSize: 11, color: '#475569', marginTop: 2 }}>{s.note}</div>
-                  <div style={{ fontSize: 10, color: '#047857', marginTop: 2, fontWeight: 600 }}>
+                  <strong style={{ fontSize: 12, color: 'var(--color-text-primary)' }}>{s.label}</strong>
+                  <div style={{ fontSize: 11, color: 'var(--color-text-secondary)', marginTop: 2 }}>{s.note}</div>
+                  <div style={{ fontSize: 10, color: 'var(--color-text-brand)', marginTop: 2, fontWeight: 600 }}>
                     {s.sub} · Verified ✓
                   </div>
                 </div>

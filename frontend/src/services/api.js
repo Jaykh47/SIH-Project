@@ -48,8 +48,11 @@ export default api;
 
 // ── Auth ───────────────────────────────────────────────────────
 export const authAPI = {
-  login: (email, password) => api.post('/auth/login', { email, password }),
-  me:    ()                => api.get('/auth/me'),
+  login:    (email, password, extra = {}) => api.post('/auth/login', { email, password, ...extra }),
+  register: (userData)                    => api.post('/auth/register', userData),
+  sendOtp:  (email)                       => api.post('/auth/send-otp', { email }),
+  verifyOtp:(email, otp)                  => api.post('/auth/verify-otp', { email, otp }),
+  me:       ()                            => api.get('/auth/me'),
 };
 
 // ── Parcels & GIS Map ──────────────────────────────────────────

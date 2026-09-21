@@ -126,10 +126,10 @@ export default function ApplicationsPage() {
               <FileText size={20} color="#059669" />
             </div>
             <div>
-              <h1 style={{ fontSize: 24, fontWeight: 800, margin: 0, color: '#064e3b' }}>
+              <h1 style={{ fontSize: 24, fontWeight: 800, margin: 0, color: 'var(--color-text-primary)' }}>
                 {isOfficer() ? 'Citizen Service Applications Workflow' : 'My Land Service Applications'}
               </h1>
-              <p style={{ margin: '2px 0 0', fontSize: 13, color: '#475569' }}>
+              <p style={{ margin: '2px 0 0', fontSize: 13, color: 'var(--color-text-muted)' }}>
                 {isOfficer()
                   ? 'Review, field inspect, and process citizen mutations, conversions, and demarcation requests.'
                   : 'Track the status and statutory progress of your filed land administration requests.'}
@@ -187,14 +187,14 @@ export default function ApplicationsPage() {
 
       {/* Applications Table */}
       {loading ? (
-        <div className="glass-card" style={{ padding: 48, textAlign: 'center', color: '#065f46', fontWeight: 600 }}>
+        <div className="glass-card" style={{ padding: 48, textAlign: 'center', color: 'var(--color-text-brand)', fontWeight: 600 }}>
           <div style={{ fontSize: 24, marginBottom: 8 }}>📄</div>
           <div>Loading applications…</div>
         </div>
       ) : filteredApps.length === 0 ? (
-        <div className="glass-card" style={{ padding: 48, textAlign: 'center', color: '#64748b' }}>
+        <div className="glass-card" style={{ padding: 48, textAlign: 'center', color: 'var(--color-text-muted)' }}>
           <CheckCircle2 size={36} color="#059669" style={{ margin: '0 auto 12px' }} />
-          <div style={{ fontSize: 16, fontWeight: 700, color: '#064e3b' }}>No applications found</div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--color-text-primary)' }}>No applications found</div>
           <div style={{ fontSize: 13, marginTop: 4 }}>
             {isCitizen()
               ? 'You have not submitted any service applications yet. Apply for a mutation or survey to begin.'
@@ -225,39 +225,39 @@ export default function ApplicationsPage() {
                 <tr key={app.application_id}>
                   <td>
                     <div
-                      style={{ fontWeight: 700, color: '#059669', cursor: 'pointer', fontFamily: 'Space Grotesk, sans-serif' }}
+                      style={{ fontWeight: 700, color: 'var(--color-brand-500)', cursor: 'pointer', fontFamily: 'Space Grotesk, sans-serif' }}
                       onClick={() => viewDetails(app.application_id)}
                     >
                       {app.application_no}
                     </div>
                   </td>
                   <td>
-                    <div style={{ fontWeight: 600, color: '#0f172a' }}>
+                    <div style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>
                       {app.service_type?.replace(/_/g, ' ').toUpperCase()}
                     </div>
-                    <div style={{ fontSize: 11, color: '#64748b', maxWidth: 260, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <div style={{ fontSize: 11, color: 'var(--color-text-muted)', maxWidth: 260, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {app.description}
                     </div>
                   </td>
                   <td>
                     {app.ulpin ? (
                       <div
-                        style={{ color: '#059669', fontWeight: 600, cursor: 'pointer', fontSize: 13 }}
+                        style={{ color: 'var(--color-brand-500)', fontWeight: 600, cursor: 'pointer', fontSize: 13 }}
                         onClick={() => navigate(`/parcels/${app.ulpin}`)}
                       >
                         {app.ulpin}
                       </div>
                     ) : (
-                      <span style={{ color: '#64748b', fontSize: 12 }}>N/A (General Service)</span>
+                      <span style={{ color: 'var(--color-text-muted)', fontSize: 12 }}>N/A (General Service)</span>
                     )}
                   </td>
                   {isOfficer() && (
                     <td>
-                      <div style={{ fontWeight: 600, color: '#0f172a', fontSize: 13 }}>
+                      <div style={{ fontWeight: 600, color: 'var(--color-text-primary)', fontSize: 13 }}>
                         {app.applicant_name || 'Citizen'}
                       </div>
                       {app.applicant_phone && (
-                        <div style={{ fontSize: 11, color: '#64748b' }}>{app.applicant_phone}</div>
+                        <div style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>{app.applicant_phone}</div>
                       )}
                     </td>
                   )}
@@ -273,8 +273,7 @@ export default function ApplicationsPage() {
                   <td style={{ textAlign: 'right' }}>
                     <div style={{ display: 'inline-flex', gap: 8 }}>
                       <button
-                        className="btn btn-ghost"
-                        style={{ padding: '4px 10px', fontSize: 12 }}
+                        className="btn btn-table-action"
                         onClick={() => viewDetails(app.application_id)}
                       >
                         <Eye size={14} /> Details
@@ -311,30 +310,30 @@ export default function ApplicationsPage() {
           zIndex: 9999, padding: 20
         }}>
           <div className="glass-card" style={{
-            background: '#ffffff',
-            border: '1px solid rgba(5, 150, 105, 0.2)',
+            background: 'var(--color-surface-800)',
+            border: '1px solid var(--color-border)',
             borderRadius: 16,
             width: '100%',
             maxWidth: 680,
             maxHeight: '90vh',
             overflowY: 'auto',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.15)'
+            boxShadow: 'var(--shadow-elevated)'
           }}>
             <div style={{
               padding: '16px 24px',
-              borderBottom: '1px solid #f1f5f9',
+              borderBottom: '1px solid var(--color-border)',
               display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-              position: 'sticky', top: 0, background: '#ffffff', zIndex: 10
+              position: 'sticky', top: 0, background: 'var(--color-surface-800)', zIndex: 10
             }}>
               <div>
                 <span className="section-label">Application Dossier</span>
-                <div style={{ fontSize: 18, fontWeight: 800, color: '#064e3b', fontFamily: 'Space Grotesk, sans-serif' }}>
+                <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--color-text-primary)', fontFamily: 'Space Grotesk, sans-serif' }}>
                   {selectedApp.application_no}
                 </div>
               </div>
               <button
                 onClick={() => setSelectedApp(null)}
-                style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}
+                style={{ background: 'none', border: 'none', color: 'var(--color-text-muted)', cursor: 'pointer' }}
               >
                 <X size={20} />
               </button>
@@ -343,22 +342,22 @@ export default function ApplicationsPage() {
             <div style={{ padding: 24 }}>
               {/* Status Header */}
               <div style={{
-                background: '#f0fdf4',
+                background: 'var(--color-surface-700)',
                 borderRadius: 12,
                 padding: 18,
                 marginBottom: 20,
-                border: '1px solid #d1fae5'
+                border: '1px solid var(--color-border)'
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                   <div>
-                    <div style={{ fontSize: 11, color: '#065f46', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    <div style={{ fontSize: 11, color: 'var(--color-text-brand)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                       Current Statutory Status
                     </div>
                     <div style={{ marginTop: 4 }}>{getStatusBadge(selectedApp.status)}</div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: 11, color: '#64748b' }}>Service Requested</div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: '#064e3b' }}>
+                    <div style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>Service Requested</div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text-primary)' }}>
                       {selectedApp.service_type?.replace(/_/g, ' ').toUpperCase()}
                     </div>
                   </div>
@@ -379,14 +378,14 @@ export default function ApplicationsPage() {
                       <div key={step} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
                         <div style={{
                           width: 28, height: 28, borderRadius: '50%',
-                          background: isPassed ? '#059669' : isCurrent ? '#d97706' : '#e2e8f0',
-                          color: isPassed || isCurrent ? '#fff' : '#64748b', fontSize: 12, fontWeight: 700,
+                          background: isPassed ? '#059669' : isCurrent ? '#d97706' : 'var(--color-surface-800)',
+                          color: isPassed || isCurrent ? '#fff' : 'var(--color-text-muted)', fontSize: 12, fontWeight: 700,
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           boxShadow: isCurrent ? '0 0 10px rgba(217, 119, 6, 0.4)' : 'none'
                         }}>
                           {isPassed ? '✓' : idx + 1}
                         </div>
-                        <div style={{ fontSize: 10, color: isPassed ? '#059669' : isCurrent ? '#d97706' : '#64748b', fontWeight: 600, marginTop: 6, textTransform: 'capitalize' }}>
+                        <div style={{ fontSize: 10, color: isPassed ? 'var(--color-brand-500)' : isCurrent ? '#d97706' : 'var(--color-text-muted)', fontWeight: 600, marginTop: 6, textTransform: 'capitalize' }}>
                           {step.replace(/_/g, ' ')}
                         </div>
                       </div>
@@ -397,27 +396,27 @@ export default function ApplicationsPage() {
 
               {/* Details grid */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14, marginBottom: 20 }}>
-                <div style={{ background: '#f8faf9', border: '1px solid #e2e8f0', padding: 12, borderRadius: 8 }}>
-                  <div style={{ fontSize: 11, color: '#64748b' }}>Target Parcel (ULPIN)</div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: '#059669', marginTop: 2 }}>
+                <div style={{ background: 'var(--color-surface-700)', border: '1px solid var(--color-border)', padding: 12, borderRadius: 8 }}>
+                  <div style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>Target Parcel (ULPIN)</div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-brand-500)', marginTop: 2 }}>
                     {selectedApp.ulpin || 'N/A'}
                   </div>
                 </div>
-                <div style={{ background: '#f8faf9', border: '1px solid #e2e8f0', padding: 12, borderRadius: 8 }}>
-                  <div style={{ fontSize: 11, color: '#64748b' }}>Applicant Name</div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: '#0f172a', marginTop: 2 }}>
+                <div style={{ background: 'var(--color-surface-700)', border: '1px solid var(--color-border)', padding: 12, borderRadius: 8 }}>
+                  <div style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>Applicant Name</div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text-primary)', marginTop: 2 }}>
                     {selectedApp.applicant_name}
                   </div>
                 </div>
-                <div style={{ background: '#f8faf9', border: '1px solid #e2e8f0', padding: 12, borderRadius: 8 }}>
-                  <div style={{ fontSize: 11, color: '#64748b' }}>Submission Timestamp</div>
-                  <div style={{ fontSize: 13, color: '#334155', marginTop: 2 }}>
+                <div style={{ background: 'var(--color-surface-700)', border: '1px solid var(--color-border)', padding: 12, borderRadius: 8 }}>
+                  <div style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>Submission Timestamp</div>
+                  <div style={{ fontSize: 13, color: 'var(--color-text-secondary)', marginTop: 2 }}>
                     {new Date(selectedApp.submitted_at).toLocaleString()}
                   </div>
                 </div>
-                <div style={{ background: '#f8faf9', border: '1px solid #e2e8f0', padding: 12, borderRadius: 8 }}>
-                  <div style={{ fontSize: 11, color: '#64748b' }}>Village / Revenue Circle</div>
-                  <div style={{ fontSize: 13, color: '#334155', marginTop: 2 }}>
+                <div style={{ background: 'var(--color-surface-700)', border: '1px solid var(--color-border)', padding: 12, borderRadius: 8 }}>
+                  <div style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>Village / Revenue Circle</div>
+                  <div style={{ fontSize: 13, color: 'var(--color-text-secondary)', marginTop: 2 }}>
                     {selectedApp.village_name || 'Revenue Circle 04'}
                   </div>
                 </div>
@@ -427,12 +426,12 @@ export default function ApplicationsPage() {
               <div style={{ marginBottom: 20 }}>
                 <div className="section-label">Applicant Statement & Requested Changes</div>
                 <div style={{
-                  background: '#f8faf9',
-                  border: '1px solid #e2e8f0',
+                  background: 'var(--color-surface-700)',
+                  border: '1px solid var(--color-border)',
                   borderRadius: 8,
                   padding: 12,
                   fontSize: 13,
-                  color: '#334155',
+                  color: 'var(--color-text-secondary)',
                   lineHeight: 1.6
                 }}>
                   {selectedApp.description || 'No statement provided.'}
@@ -443,7 +442,7 @@ export default function ApplicationsPage() {
               <div>
                 <div className="section-label">Processing History & Officer Notes</div>
                 {selectedApp.status_history && selectedApp.status_history.length > 0 ? (
-                  <div style={{ borderLeft: '2px solid #a7f3d0', marginLeft: 8, paddingLeft: 16 }}>
+                  <div style={{ borderLeft: '2px solid var(--color-border)', marginLeft: 8, paddingLeft: 16 }}>
                     {selectedApp.status_history.map(item => (
                       <div key={item.history_id} style={{ position: 'relative', marginBottom: 14 }}>
                         <div style={{
@@ -451,15 +450,15 @@ export default function ApplicationsPage() {
                           borderRadius: '50%', background: '#059669'
                         }} />
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <span style={{ fontSize: 12, fontWeight: 700, color: '#064e3b' }}>
+                          <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-brand-500)' }}>
                             {item.new_status?.replace(/_/g, ' ').toUpperCase()}
                           </span>
-                          <span style={{ fontSize: 11, color: '#64748b' }}>
+                          <span style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>
                             by {item.changed_by_name || 'System'} • {new Date(item.created_at).toLocaleString()}
                           </span>
                         </div>
                         {item.remarks && (
-                          <div style={{ fontSize: 12, color: '#475569', marginTop: 4 }}>
+                          <div style={{ fontSize: 12, color: 'var(--color-text-secondary)', marginTop: 4 }}>
                             "{item.remarks}"
                           </div>
                         )}
@@ -467,14 +466,14 @@ export default function ApplicationsPage() {
                     ))}
                   </div>
                 ) : (
-                  <div style={{ fontSize: 13, color: '#64748b' }}>No status transitions recorded yet.</div>
+                  <div style={{ fontSize: 13, color: 'var(--color-text-muted)' }}>No status transitions recorded yet.</div>
                 )}
               </div>
             </div>
 
             <div style={{
               padding: '16px 24px',
-              borderTop: '1px solid #f1f5f9',
+              borderTop: '1px solid var(--color-border)',
               display: 'flex', justifyContent: 'flex-end', gap: 10
             }}>
               {isOfficer() && selectedApp.status !== 'approved' && selectedApp.status !== 'rejected' && (
@@ -506,20 +505,20 @@ export default function ApplicationsPage() {
           zIndex: 10000, padding: 20
         }}>
           <div className="glass-card" style={{
-            background: '#ffffff',
-            border: '1px solid rgba(5, 150, 105, 0.2)',
+            background: 'var(--color-surface-800)',
+            border: '1px solid var(--color-border)',
             borderRadius: 16,
             width: '100%',
             maxWidth: 500,
             overflow: 'hidden',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.15)'
+            boxShadow: 'var(--shadow-elevated)'
           }}>
             <div style={{
               padding: '16px 20px',
-              borderBottom: '1px solid #f1f5f9',
+              borderBottom: '1px solid var(--color-border)',
               display: 'flex', justifyContent: 'space-between', alignItems: 'center'
             }}>
-              <div style={{ fontSize: 16, fontWeight: 800, color: '#064e3b' }}>
+              <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--color-text-primary)' }}>
                 Advance Workflow: {statusModalApp.application_no}
               </div>
               <button

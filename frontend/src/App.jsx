@@ -1,11 +1,13 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { ThemeProvider } from './hooks/useTheme';
 import AuthProvider, { useAuth } from './hooks/useAuthContext';
 
 // Public pages
 import LandingPage    from './pages/LandingPage';
 import LoginPage      from './pages/LoginPage';
 import RegisterPage   from './pages/RegisterPage';
+import AuthPage       from './components/Auth/AuthPage';
 
 // Protected pages
 import DashboardPage    from './pages/DashboardPage';
@@ -59,37 +61,41 @@ function PublicOnly({ children }) {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          {/* ── Public routes ────────────────────────────────── */}
-          <Route path="/"         element={<LandingPage />} />
-          <Route path="/login"    element={<PublicOnly><LoginPage /></PublicOnly>} />
-          <Route path="/register" element={<PublicOnly><RegisterPage /></PublicOnly>} />
+    <ThemeProvider>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            {/* ── Public routes ────────────────────────────────── */}
+            <Route path="/"              element={<LandingPage />} />
+            <Route path="/auth"          element={<PublicOnly><AuthPage /></PublicOnly>} />
+            <Route path="/login"         element={<PublicOnly><AuthPage defaultTab="login" /></PublicOnly>} />
+            <Route path="/register"      element={<PublicOnly><AuthPage defaultTab="signup" /></PublicOnly>} />
+            <Route path="/officer-login" element={<PublicOnly><LoginPage /></PublicOnly>} />
 
-          {/* ── Protected routes (under MainLayout) ──────────── */}
-          <Route path="/dashboard" element={
-            <Protected><MainLayout /></Protected>
-          }>
-            <Route index                  element={<DashboardPage />} />
-          </Route>
+            {/* ── Protected routes (under MainLayout) ──────────── */}
+            <Route path="/dashboard" element={
+              <Protected><MainLayout /></Protected>
+            }>
+              <Route index                  element={<DashboardPage />} />
+            </Route>
 
-          <Route path="/" element={
-            <Protected><MainLayout /></Protected>
-          }>
-            <Route path="map"              element={<MapPage />} />
-            <Route path="search"           element={<SearchPage />} />
-            <Route path="parcels/:ulpin"   element={<ParcelDetailPage />} />
-            <Route path="alerts"           element={<AlertsPage />} />
-            <Route path="applications"     element={<ApplicationsPage />} />
-            <Route path="services"         element={<ServicesPage />} />
-            <Route path="workflows"        element={<WorkflowsPage />} />
-          </Route>
+            <Route path="/" element={
+              <Protected><MainLayout /></Protected>
+            }>
+              <Route path="map"              element={<MapPage />} />
+              <Route path="search"           element={<SearchPage />} />
+              <Route path="parcels/:ulpin"   element={<ParcelDetailPage />} />
+              <Route path="alerts"           element={<AlertsPage />} />
+              <Route path="applications"     element={<ApplicationsPage />} />
+              <Route path="services"         element={<ServicesPage />} />
+              <Route path="workflows"        element={<WorkflowsPage />} />
+            </Route>
 
-          {/* Catch-all */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+            {/* Catch-all */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

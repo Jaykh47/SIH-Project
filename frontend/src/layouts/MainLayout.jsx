@@ -5,6 +5,7 @@ import {
   LayoutDashboard, Map, Search, Bell, FileText,
   Briefcase, LogOut, User, Route, Users, Zap
 } from 'lucide-react';
+import ThemeToggle from '../components/ThemeToggle';
 
 const NAV = [
   { to: '/dashboard',    label: 'Dashboard',    icon: LayoutDashboard, exact: true },
@@ -76,13 +77,19 @@ export default function MainLayout() {
               boxShadow: '0 2px 8px rgba(45,106,79,0.3)',
             }}>🌿</div>
             <div>
-              <div style={{
-                fontFamily: 'Outfit, sans-serif', fontWeight: 800,
-                fontSize: 16, color: '#0f172a', letterSpacing: '-0.02em',
-              }}>
-                Smart<span style={{ color: 'var(--sb-600)' }}>Bhumi</span>
+              <div
+                className="brand-title"
+                style={{
+                  fontFamily: 'Outfit, sans-serif', fontWeight: 800,
+                  fontSize: 16, color: 'var(--color-text-primary)', letterSpacing: '-0.02em',
+                }}
+              >
+                Smart<span className="brand-highlight" style={{ color: 'var(--color-text-brand)' }}>Bhumi</span>
               </div>
-              <div style={{ fontSize: 10, color: 'var(--sb-600)', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+              <div
+                className="brand-sub"
+                style={{ fontSize: 10, color: 'var(--color-text-brand)', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}
+              >
                 Land Governance
               </div>
             </div>
@@ -91,7 +98,7 @@ export default function MainLayout() {
 
         {/* Navigation */}
         <nav className="sidebar-nav">
-          <div style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em', padding: '4px 14px 10px' }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', padding: '4px 14px 10px' }}>
             Navigation
           </div>
           {NAV.map(item => {
@@ -112,7 +119,7 @@ export default function MainLayout() {
         </nav>
 
         {/* User info & quick persona */}
-        <div style={{ padding: '14px 14px 18px', borderTop: '1px solid rgba(45,106,79,0.1)' }}>
+        <div style={{ padding: '14px 14px 18px', borderTop: '1px solid var(--color-border)' }}>
           {/* Disclaimer */}
           <div className="disclaimer-banner" style={{ marginBottom: 12, fontSize: 10 }}>
             ⚠️ SYNTHETIC DATA — Demo Only
@@ -120,8 +127,8 @@ export default function MainLayout() {
 
           {/* User card */}
           <div style={{
-            background: 'var(--sb-50)',
-            border: '1px solid rgba(45,106,79,0.12)',
+            background: 'var(--color-surface-700)',
+            border: '1px solid var(--color-border)',
             borderRadius: 10,
             padding: '10px 12px',
             marginBottom: 10,
@@ -137,7 +144,7 @@ export default function MainLayout() {
                 <User size={14} color={roleColor} />
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: '#0f172a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {user?.fullName}
                 </div>
                 <div style={{
@@ -154,8 +161,7 @@ export default function MainLayout() {
           </div>
 
           <button
-            className="btn btn-ghost"
-            style={{ width: '100%', justifyContent: 'center', fontSize: 12, padding: '6px 10px' }}
+            className="btn btn-signout"
             onClick={handleLogout}
           >
             <LogOut size={13} /> Sign Out
@@ -167,37 +173,37 @@ export default function MainLayout() {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
         {/* Topbar Utility Ribbon */}
         <header style={{
-          height: 48, background: '#ffffff', borderBottom: '1px solid rgba(45,106,79,0.1)',
+          height: 48, background: 'var(--color-surface-800)', borderBottom: '1px solid var(--color-border)',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '0 24px', flexShrink: 0
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, color: '#64748b' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, color: 'var(--color-text-muted)' }}>
             <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#10b981' }} />
             <span>Digital Public Infrastructure (DPI) · SIH 2026 Pilot</span>
           </div>
 
-          {/* Persona Switcher (IntegratedDashboard Topbar Feature) */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 11, fontWeight: 700, color: '#047857', display: 'flex', alignItems: 'center', gap: 4 }}>
-              <Zap size={12} /> Switch Persona:
-            </span>
-            <select
-              value={user?.roleName || 'citizen'}
-              onChange={e => {
-                const target = DEMO_ROLES.find(r => r.roleName === e.target.value);
-                if (target) handleRoleSwitch(target.email, target.password);
-              }}
-              style={{
-                fontSize: 11, fontWeight: 600, color: '#0f172a', background: '#f0fdf4',
-                border: '1px solid #a7f3d0', borderRadius: 6, padding: '4px 8px', cursor: 'pointer'
-              }}
-            >
-              {DEMO_ROLES.map(r => (
-                <option key={r.roleName} value={r.roleName}>
-                  {r.label}
-                </option>
-              ))}
-            </select>
+          {/* Persona Switcher & Theme Toggle */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-brand)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                <Zap size={12} /> Persona:
+              </span>
+              <select
+                value={user?.roleName || 'citizen'}
+                onChange={e => {
+                  const target = DEMO_ROLES.find(r => r.roleName === e.target.value);
+                  if (target) handleRoleSwitch(target.email, target.password);
+                }}
+                className="persona-select text-xs font-semibold rounded-lg border px-2 py-1 outline-none transition bg-[#f0fdf4] dark:bg-[#16221c] border-emerald-300 dark:border-emerald-800 text-slate-800 dark:text-slate-100"
+              >
+                {DEMO_ROLES.map(r => (
+                  <option key={r.roleName} value={r.roleName}>
+                    {r.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <ThemeToggle />
           </div>
         </header>
 

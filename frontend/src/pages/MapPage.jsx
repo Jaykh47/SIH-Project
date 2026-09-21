@@ -4,6 +4,7 @@ import { MapContainer, TileLayer, GeoJSON, Polygon, Polyline, Tooltip, useMap } 
 import L from 'leaflet';
 import { parcelsAPI } from '../services/api';
 import { useLocation } from '../hooks/useLocation';
+import { useTheme } from '../hooks/useTheme';
 import {
   Search, Layers, Info, AlertTriangle, RotateCcw,
   MapPin, CheckCircle2, Shield, Building2, Droplets, AlertOctagon, ExternalLink
@@ -119,6 +120,7 @@ function MapController({ flyTarget, resetTrigger }) {
 }
 
 export default function MapPage() {
+  const { isDark } = useTheme();
   const [parcels, setParcels] = useState(null);
   const [selected, setSelected] = useState(null);
   const [search, setSearch] = useState('');
@@ -126,8 +128,13 @@ export default function MapPage() {
   const [resetTrigger, setResetTrigger] = useState(0);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
-  const [basemap, setBasemap] = useState('light');
+  const [basemap, setBasemap] = useState(() => (isDark ? 'dark' : 'light'));
   const [activeTab, setActiveTab] = useState('overview');
+
+  // Auto-sync basemap on theme toggle unless user picked satellite/osm
+  useEffect(() => {
+    setBasemap(prev => (prev === 'light' || prev === 'dark' ? (isDark ? 'dark' : 'light') : prev));
+  }, [isDark]);
 
   // Layer overlay toggles (from IntegratedMap feature set)
   const [layers, setLayers] = useState({
@@ -235,11 +242,11 @@ export default function MapPage() {
     });
 
     layer.bindTooltip(
-      `<div style="font-family:Inter,sans-serif;font-size:12px;color:#0f172a;line-height:1.4">
-        <strong style="color:#059669">${props.ulpin}</strong><br/>
-        ${props.village_name || 'Durgapur'} · Plot #${props.plot_no || '—'}<br/>
-        <span style="text-transform:capitalize;color:#475569">${props.land_use}</span> · ${props.area_recorded ? props.area_recorded.toLocaleString() + ' m²' : ''}
-        ${props.has_alerts ? '<br/><span style="color:#b45309;font-weight:700">⚠️ Active Alert</span>' : ''}
+      `<div class="parcel-map-tooltip" style="font-family:Inter,sans-serif;font-size:12px;line-height:1.4">
+        <strong style="color:${isDark ? '#52b788' : '#059669'}">${props.ulpin}</strong><br/>
+        <span style="color:${isDark ? '#cbd5e1' : '#1e293b'}">${props.village_name || 'Durgapur'} · Plot #${props.plot_no || '—'}</span><br/>
+        <span style="text-transform:capitalize;color:${isDark ? '#94a3b8' : '#475569'}">${props.land_use}</span> · <span style="color:${isDark ? '#cbd5e1' : '#1e293b'}">${props.area_recorded ? props.area_recorded.toLocaleString() + ' m²' : ''}</span>
+        ${props.has_alerts ? '<br/><span style="color:#f59e0b;font-weight:700">⚠️ Active Alert</span>' : ''}
       </div>`,
       { permanent: false, sticky: true }
     );
@@ -282,18 +289,18 @@ export default function MapPage() {
   ];
 
   return (
-    <div style={{ display:'flex', flexDirection:'column', height:'100%', background: '#f8fafc' }}>
+    <div style={{ display:'flex', flexDirection:'column', height:'100%', background: 'var(--color-surface-900)' }}>
       {/* ── Top Navigation & Region Selector Bar ── */}
       <div style={{
-        background: '#ffffff', borderBottom: '1px solid rgba(5,150,105,0.12)',
+        background: 'var(--color-surface-800)', borderBottom: '1px solid var(--color-border)',
         padding: '12px 20px', display: 'flex', flexDirection: 'column', gap: 10
       }}>
         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:10 }}>
           <div>
-            <h1 style={{ margin:0, fontSize:20, fontWeight:800, color:'#064e3b', fontFamily:'Outfit, sans-serif' }}>
+            <h1 style={{ margin:0, fontSize:20, fontWeight:800, color:'var(--color-text-primary)', fontFamily:'Outfit, sans-serif' }}>
               GIS Cadastral Parcel Explorer
             </h1>
-            <p style={{ margin:0, fontSize:12, color:'#64748b' }}>
+            <p style={{ margin:0, fontSize:12, color:'var(--color-text-muted)' }}>
               Multi-department spatial intelligence connected to ULPIN
             </p>
           </div>
@@ -358,11 +365,11 @@ export default function MapPage() {
         {/* Region & Layer Toggles Bar */}
         <div style={{
           display:'flex', justifyContent:'space-between', alignItems:'center',
-          flexWrap:'wrap', gap:10, paddingTop:8, borderTop:'1px solid #f1f5f9'
+          flexWrap:'wrap', gap:10, paddingTop:8, borderTop:'1px solid var(--color-border)'
         }}>
           {/* State / District Selectors */}
           <div style={{ display:'flex', alignItems:'center', gap:8, flexWrap:'wrap' }}>
-            <span style={{ fontSize:11, fontWeight:700, color:'#047857', display:'flex', alignItems:'center', gap:4 }}>
+            <span style={{ fontSize:11, fontWeight:700, color:'var(--color-text-brand)', display:'flex', alignItems:'center', gap:4 }}>
               <MapPin size={12} /> Region:
             </span>
             <select
@@ -392,7 +399,9 @@ export default function MapPage() {
               <button
                 onClick={handleResetView}
                 style={{
-                  background:'#ecfdf5', border:'1px solid #a7f3d0', color:'#047857',
+                  background: isDark ? '#142a1e' : '#ecfdf5',
+                  border: isDark ? '1px solid #1e5c3c' : '1px solid #a7f3d0',
+                  color: isDark ? '#86efac' : '#047857',
                   padding:'3px 8px', borderRadius:6, fontSize:11, fontWeight:600, cursor:'pointer'
                 }}
               >
@@ -402,14 +411,14 @@ export default function MapPage() {
           </div>
 
           {/* GIS Layer Toggles (IntegratedMap feature) */}
-          <div style={{ display:'flex', alignItems:'center', gap:14, fontSize:11, color:'#475569' }}>
-            <span style={{ fontWeight:700, color:'#065f46' }}>Overlays:</span>
+          <div style={{ display:'flex', alignItems:'center', gap:14, fontSize:11, color:'var(--color-text-secondary)' }}>
+            <span style={{ fontWeight:700, color:'var(--color-text-brand)' }}>Overlays:</span>
             <label style={{ display:'flex', alignItems:'center', gap:4, cursor:'pointer' }}>
               <input
                 type="checkbox"
                 checked={layers.zoning}
                 onChange={e => setLayers({ ...layers, zoning: e.target.checked })}
-                style={{ accentColor: '#176b5b' }}
+                style={{ accentColor: '#10b981' }}
               />
               <Building2 size={12} color="#4a72c4" /> Zoning R2
             </label>
@@ -418,7 +427,7 @@ export default function MapPage() {
                 type="checkbox"
                 checked={layers.utility}
                 onChange={e => setLayers({ ...layers, utility: e.target.checked })}
-                style={{ accentColor: '#176b5b' }}
+                style={{ accentColor: '#10b981' }}
               />
               <Droplets size={12} color="#3f8ec9" /> Water Main
             </label>
@@ -427,7 +436,7 @@ export default function MapPage() {
                 type="checkbox"
                 checked={layers.restriction}
                 onChange={e => setLayers({ ...layers, restriction: e.target.checked })}
-                style={{ accentColor: '#176b5b' }}
+                style={{ accentColor: '#10b981' }}
               />
               <AlertOctagon size={12} color="#bb694c" /> Height Zone
             </label>
@@ -521,22 +530,22 @@ export default function MapPage() {
           {/* Map Legend */}
           <div style={{
             position:'absolute', bottom:16, left:16, zIndex:500,
-            background:'rgba(255,255,255,0.96)', border:'1px solid rgba(5,150,105,0.2)',
-            borderRadius:10, padding:'10px 14px', boxShadow:'0 4px 16px rgba(0,0,0,0.08)',
-            fontSize:11
+            background: 'var(--color-glass)', border: '1px solid var(--color-border)',
+            borderRadius: 10, padding: '10px 14px', boxShadow: 'var(--shadow-card)',
+            fontSize: 11, backdropFilter: 'blur(8px)'
           }}>
-            <div style={{ fontSize:10, color:'#065f46', fontWeight:800, textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:6 }}>
+            <div style={{ fontSize:10, color:'var(--color-text-brand)', fontWeight:800, textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:6 }}>
               Cadastral Legend
             </div>
             {Object.entries(LAND_USE_COLORS).map(([use, color]) => (
               <div key={use} style={{ display:'flex', alignItems:'center', gap:8, marginBottom:3 }}>
                 <div style={{ width:11, height:11, background:color, borderRadius:2, opacity:0.85 }} />
-                <span style={{ color:'#334155', fontWeight:500, textTransform:'capitalize' }}>{use}</span>
+                <span style={{ color:'var(--color-text-secondary)', fontWeight:500, textTransform:'capitalize' }}>{use}</span>
               </div>
             ))}
-            <div style={{ display:'flex', alignItems:'center', gap:8, marginTop:6, paddingTop:6, borderTop:'1px solid #f1f5f9' }}>
+            <div style={{ display:'flex', alignItems:'center', gap:8, marginTop:6, paddingTop:6, borderTop:'1px solid var(--color-border)' }}>
               <div style={{ width:12, height:3, background:'#d97706' }} />
-              <span style={{ color:'#b45309', fontWeight:600 }}>Active Alert</span>
+              <span style={{ color:'#f59e0b', fontWeight:600 }}>Active Alert</span>
             </div>
           </div>
         </div>
@@ -544,32 +553,32 @@ export default function MapPage() {
         {/* ── Right Parcel Information & Dossier Sidebar ── */}
         {selected ? (
           <aside style={{
-            width: 360, background: '#ffffff', borderLeft: '1px solid rgba(5,150,105,0.15)',
-            display: 'flex', flexDirection: 'column', boxShadow: '-2px 0 16px rgba(0,0,0,0.05)',
+            width: 360, background: 'var(--color-surface-800)', borderLeft: '1px solid var(--color-border)',
+            display: 'flex', flexDirection: 'column', boxShadow: 'var(--shadow-elevated)',
             zIndex: 600, overflow: 'hidden'
           }}>
             {/* Panel Header */}
-            <div style={{ padding: '14px 18px', borderBottom: '1px solid #f1f5f9', background: '#fcfdfc' }}>
+            <div style={{ padding: '14px 18px', borderBottom: '1px solid var(--color-border)', background: 'var(--color-surface-700)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: 10, fontWeight: 700, color: '#047857', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-brand)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                   Selected Parcel
                 </span>
                 <button
                   onClick={() => setSelected(null)}
-                  style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: 18 }}
+                  style={{ background: 'none', border: 'none', color: 'var(--color-text-muted)', cursor: 'pointer', fontSize: 18 }}
                   title="Close sidebar"
                 >×</button>
               </div>
-              <div style={{ fontFamily: 'monospace', fontSize: 15, color: '#059669', fontWeight: 800, marginTop: 3 }}>
+              <div style={{ fontFamily: 'monospace', fontSize: 15, color: 'var(--color-text-brand)', fontWeight: 800, marginTop: 3 }}>
                 {selected.ulpin}
               </div>
-              <div style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>
+              <div style={{ fontSize: 12, color: 'var(--color-text-muted)', marginTop: 2 }}>
                 {selected.village_name || 'Durgapur'} · Plot #{selected.plot_no || '—'}
               </div>
             </div>
 
             {/* Tabs Header */}
-            <div style={{ display: 'flex', borderBottom: '1px solid #f1f5f9', background: '#fafbfc' }}>
+            <div style={{ display: 'flex', borderBottom: '1px solid var(--color-border)', background: 'var(--color-surface-700)' }}>
               {[
                 { id: 'overview', label: 'Overview' },
                 { id: 'rights',   label: 'Rights (RoR)' },
@@ -581,9 +590,9 @@ export default function MapPage() {
                   onClick={() => setActiveTab(t.id)}
                   style={{
                     flex: 1, padding: '10px 4px', fontSize: 11, fontWeight: activeTab === t.id ? 700 : 500,
-                    color: activeTab === t.id ? '#047857' : '#64748b',
+                    color: activeTab === t.id ? 'var(--color-text-brand)' : 'var(--color-text-muted)',
                     border: 'none', background: 'none', cursor: 'pointer',
-                    borderBottom: activeTab === t.id ? '2px solid #047857' : '2px solid transparent'
+                    borderBottom: activeTab === t.id ? '2px solid var(--color-text-brand)' : '2px solid transparent'
                   }}
                 >
                   {t.label}
@@ -595,34 +604,34 @@ export default function MapPage() {
             <div style={{ flex: 1, padding: 18, overflowY: 'auto' }}>
               {activeTab === 'overview' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  <div style={{ background: '#f8fafc', padding: 12, borderRadius: 8, border: '1px solid #e2e8f0' }}>
-                    <div style={{ fontSize: 11, color: '#64748b' }}>Primary Land Classification</div>
-                    <div style={{ fontSize: 14, fontWeight: 700, textTransform: 'capitalize', color: '#0f172a', marginTop: 2 }}>
+                  <div style={{ background: 'var(--color-surface-700)', padding: 12, borderRadius: 8, border: '1px solid var(--color-border)' }}>
+                    <div style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>Primary Land Classification</div>
+                    <div style={{ fontSize: 14, fontWeight: 700, textTransform: 'capitalize', color: 'var(--color-text-primary)', marginTop: 2 }}>
                       {selected.land_use || 'Residential'}
                     </div>
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                    <div style={{ background: '#f8fafc', padding: 10, borderRadius: 8, border: '1px solid #e2e8f0' }}>
-                      <span style={{ fontSize: 10, color: '#64748b' }}>Recorded Area</span>
-                      <strong style={{ display: 'block', fontSize: 12, marginTop: 2 }}>
+                    <div style={{ background: 'var(--color-surface-700)', padding: 10, borderRadius: 8, border: '1px solid var(--color-border)' }}>
+                      <span style={{ fontSize: 10, color: 'var(--color-text-muted)' }}>Recorded Area</span>
+                      <strong style={{ display: 'block', fontSize: 12, color: 'var(--color-text-primary)', marginTop: 2 }}>
                         {selected.area_recorded ? `${selected.area_recorded.toLocaleString()} m²` : '2,400 m²'}
                       </strong>
                     </div>
-                    <div style={{ background: '#f8fafc', padding: 10, borderRadius: 8, border: '1px solid #e2e8f0' }}>
-                      <span style={{ fontSize: 10, color: '#64748b' }}>GIS Calculated</span>
-                      <strong style={{ display: 'block', fontSize: 12, marginTop: 2 }}>
+                    <div style={{ background: 'var(--color-surface-700)', padding: 10, borderRadius: 8, border: '1px solid var(--color-border)' }}>
+                      <span style={{ fontSize: 10, color: 'var(--color-text-muted)' }}>GIS Calculated</span>
+                      <strong style={{ display: 'block', fontSize: 12, color: 'var(--color-text-primary)', marginTop: 2 }}>
                         {selected.area_gis ? `${Math.round(selected.area_gis).toLocaleString()} m²` : '2,392 m²'}
                       </strong>
                     </div>
                   </div>
 
                   {selected.has_alerts && (
-                    <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 8, padding: 12, marginTop: 4 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#b45309', fontSize: 12, fontWeight: 700 }}>
+                    <div style={{ background: isDark ? '#2b1d0c' : '#fffbeb', border: isDark ? '1px solid #78350f' : '1px solid #fde68a', borderRadius: 8, padding: 12, marginTop: 4 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#f59e0b', fontSize: 12, fontWeight: 700 }}>
                         <AlertTriangle size={14} /> Active Verification Alerts
                       </div>
-                      <p style={{ margin: '4px 0 0', fontSize: 11, color: '#78350f' }}>
+                      <p style={{ margin: '4px 0 0', fontSize: 11, color: isDark ? '#fde68a' : '#78350f' }}>
                         Area discrepancy or anomaly flagged by AI / cadastral quality engine.
                       </p>
                     </div>
@@ -632,21 +641,21 @@ export default function MapPage() {
 
               {activeTab === 'rights' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  <div style={{ borderBottom: '1px dashed #e2e8f0', paddingBottom: 8 }}>
-                    <span style={{ fontSize: 11, color: '#64748b' }}>RoR / Khatian No.</span>
-                    <strong style={{ display: 'block', fontSize: 13, marginTop: 2 }}>KHT-{selected.plot_no || '104'}/2024</strong>
+                  <div style={{ borderBottom: '1px dashed var(--color-border)', paddingBottom: 8 }}>
+                    <span style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>RoR / Khatian No.</span>
+                    <strong style={{ display: 'block', fontSize: 13, color: 'var(--color-text-primary)', marginTop: 2 }}>KHT-{selected.plot_no || '104'}/2024</strong>
                   </div>
-                  <div style={{ borderBottom: '1px dashed #e2e8f0', paddingBottom: 8 }}>
-                    <span style={{ fontSize: 11, color: '#64748b' }}>Ownership Classification</span>
-                    <strong style={{ display: 'block', fontSize: 13, marginTop: 2 }}>Freehold Individual</strong>
+                  <div style={{ borderBottom: '1px dashed var(--color-border)', paddingBottom: 8 }}>
+                    <span style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>Ownership Classification</span>
+                    <strong style={{ display: 'block', fontSize: 13, color: 'var(--color-text-primary)', marginTop: 2 }}>Freehold Individual</strong>
                   </div>
-                  <div style={{ borderBottom: '1px dashed #e2e8f0', paddingBottom: 8 }}>
-                    <span style={{ fontSize: 11, color: '#64748b' }}>Last Registered Deed</span>
-                    <strong style={{ display: 'block', fontSize: 13, marginTop: 2 }}>DEED-DGP-2023-8821</strong>
+                  <div style={{ borderBottom: '1px dashed var(--color-border)', paddingBottom: 8 }}>
+                    <span style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>Last Registered Deed</span>
+                    <strong style={{ display: 'block', fontSize: 13, color: 'var(--color-text-primary)', marginTop: 2 }}>DEED-DGP-2023-8821</strong>
                   </div>
                   <div>
-                    <span style={{ fontSize: 11, color: '#64748b' }}>Encumbrance Status</span>
-                    <strong style={{ display: 'block', fontSize: 13, marginTop: 2, color: '#059669' }}>
+                    <span style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>Encumbrance Status</span>
+                    <strong style={{ display: 'block', fontSize: 13, marginTop: 2, color: 'var(--color-text-brand)' }}>
                       ✓ Clear / No Active Bank Mortgage
                     </strong>
                   </div>
@@ -655,53 +664,53 @@ export default function MapPage() {
 
               {activeTab === 'planning' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  <div style={{ borderBottom: '1px dashed #e2e8f0', paddingBottom: 8 }}>
-                    <span style={{ fontSize: 11, color: '#64748b' }}>Master Plan Zone</span>
-                    <strong style={{ display: 'block', fontSize: 13, marginTop: 2 }}>Zone R2 (Primary Residential)</strong>
+                  <div style={{ borderBottom: '1px dashed var(--color-border)', paddingBottom: 8 }}>
+                    <span style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>Master Plan Zone</span>
+                    <strong style={{ display: 'block', fontSize: 13, color: 'var(--color-text-primary)', marginTop: 2 }}>Zone R2 (Primary Residential)</strong>
                   </div>
-                  <div style={{ borderBottom: '1px dashed #e2e8f0', paddingBottom: 8 }}>
-                    <span style={{ fontSize: 11, color: '#64748b' }}>Permissible FSI / FAR</span>
-                    <strong style={{ display: 'block', fontSize: 13, marginTop: 2 }}>2.25 FSI</strong>
+                  <div style={{ borderBottom: '1px dashed var(--color-border)', paddingBottom: 8 }}>
+                    <span style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>Permissible FSI / FAR</span>
+                    <strong style={{ display: 'block', fontSize: 13, color: 'var(--color-text-primary)', marginTop: 2 }}>2.25 FSI</strong>
                   </div>
-                  <div style={{ borderBottom: '1px dashed #e2e8f0', paddingBottom: 8 }}>
-                    <span style={{ fontSize: 11, color: '#64748b' }}>Building Permission Status</span>
-                    <strong style={{ display: 'block', fontSize: 13, marginTop: 2, color: '#0284c7' }}>
+                  <div style={{ borderBottom: '1px dashed var(--color-border)', paddingBottom: 8 }}>
+                    <span style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>Building Permission Status</span>
+                    <strong style={{ display: 'block', fontSize: 13, marginTop: 2, color: '#38bdf8' }}>
                       Approved · BP/2025/1104
                     </strong>
                   </div>
                   <div>
-                    <span style={{ fontSize: 11, color: '#64748b' }}>Height Restrictions</span>
-                    <strong style={{ display: 'block', fontSize: 13, marginTop: 2 }}>G+3 (Max 15 meters)</strong>
+                    <span style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>Height Restrictions</span>
+                    <strong style={{ display: 'block', fontSize: 13, color: 'var(--color-text-primary)', marginTop: 2 }}>G+3 (Max 15 meters)</strong>
                   </div>
                 </div>
               )}
 
               {activeTab === 'fiscal' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  <div style={{ borderBottom: '1px dashed #e2e8f0', paddingBottom: 8 }}>
-                    <span style={{ fontSize: 11, color: '#64748b' }}>Property Tax Assessment</span>
-                    <strong style={{ display: 'block', fontSize: 13, marginTop: 2 }}>₹14,280 / year</strong>
+                  <div style={{ borderBottom: '1px dashed var(--color-border)', paddingBottom: 8 }}>
+                    <span style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>Property Tax Assessment</span>
+                    <strong style={{ display: 'block', fontSize: 13, color: 'var(--color-text-primary)', marginTop: 2 }}>₹14,280 / year</strong>
                   </div>
-                  <div style={{ borderBottom: '1px dashed #e2e8f0', paddingBottom: 8 }}>
-                    <span style={{ fontSize: 11, color: '#64748b' }}>Current Tax Dues</span>
-                    <strong style={{ display: 'block', fontSize: 13, marginTop: 2, color: '#059669' }}>
+                  <div style={{ borderBottom: '1px dashed var(--color-border)', paddingBottom: 8 }}>
+                    <span style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>Current Tax Dues</span>
+                    <strong style={{ display: 'block', fontSize: 13, marginTop: 2, color: 'var(--color-text-brand)' }}>
                       Paid in Full (Up to FY 2026-27)
                     </strong>
                   </div>
-                  <div style={{ borderBottom: '1px dashed #e2e8f0', paddingBottom: 8 }}>
-                    <span style={{ fontSize: 11, color: '#64748b' }}>Guideline Circle Rate</span>
-                    <strong style={{ display: 'block', fontSize: 13, marginTop: 2 }}>₹4,850 / m²</strong>
+                  <div style={{ borderBottom: '1px dashed var(--color-border)', paddingBottom: 8 }}>
+                    <span style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>Guideline Circle Rate</span>
+                    <strong style={{ display: 'block', fontSize: 13, color: 'var(--color-text-primary)', marginTop: 2 }}>₹4,850 / m²</strong>
                   </div>
                   <div>
-                    <span style={{ fontSize: 11, color: '#64748b' }}>Municipal Ward</span>
-                    <strong style={{ display: 'block', fontSize: 13, marginTop: 2 }}>Durgapur MC · Ward 14</strong>
+                    <span style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>Municipal Ward</span>
+                    <strong style={{ display: 'block', fontSize: 13, color: 'var(--color-text-primary)', marginTop: 2 }}>Durgapur MC · Ward 14</strong>
                   </div>
                 </div>
               )}
             </div>
 
             {/* Panel Footer */}
-            <div style={{ padding: 14, borderTop: '1px solid #f1f5f9', background: '#fafbfc' }}>
+            <div style={{ padding: 14, borderTop: '1px solid var(--color-border)', background: 'var(--color-surface-700)' }}>
               <button
                 className="btn btn-primary"
                 style={{ width: '100%', justifyContent: 'center', gap: 6 }}
@@ -713,32 +722,32 @@ export default function MapPage() {
           </aside>
         ) : (
           <aside style={{
-            width: 280, background: '#ffffff', borderLeft: '1px solid rgba(5,150,105,0.15)',
+            width: 280, background: 'var(--color-surface-800)', borderLeft: '1px solid var(--color-border)',
             padding: 20, display: 'flex', flexDirection: 'column', gap: 14
           }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#065f46', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-brand)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
               Jurisdiction Overview
             </div>
 
-            <div style={{ background: '#f8fafc', padding: 14, borderRadius: 10, border: '1px solid #e2e8f0' }}>
-              <span style={{ fontSize: 11, color: '#64748b' }}>Cadastral Coverage</span>
-              <strong style={{ display: 'block', fontSize: 18, color: '#047857', marginTop: 2 }}>98.4%</strong>
-              <small style={{ fontSize: 10, color: '#64748b' }}>Digitally linked boundaries</small>
+            <div style={{ background: 'var(--color-surface-700)', padding: 14, borderRadius: 10, border: '1px solid var(--color-border)' }}>
+              <span style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>Cadastral Coverage</span>
+              <strong style={{ display: 'block', fontSize: 18, color: 'var(--color-text-brand)', marginTop: 2 }}>98.4%</strong>
+              <small style={{ fontSize: 10, color: 'var(--color-text-muted)' }}>Digitally linked boundaries</small>
             </div>
 
-            <div style={{ background: '#f8fafc', padding: 14, borderRadius: 10, border: '1px solid #e2e8f0' }}>
-              <span style={{ fontSize: 11, color: '#64748b' }}>Active Pilot</span>
-              <strong style={{ display: 'block', fontSize: 14, color: '#0f172a', marginTop: 2 }}>Durgapur (WB)</strong>
-              <small style={{ fontSize: 10, color: '#64748b' }}>{parcels?.features?.length || 13} PostGIS parcels seeded</small>
+            <div style={{ background: 'var(--color-surface-700)', padding: 14, borderRadius: 10, border: '1px solid var(--color-border)' }}>
+              <span style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>Active Pilot</span>
+              <strong style={{ display: 'block', fontSize: 14, color: 'var(--color-text-primary)', marginTop: 2 }}>Durgapur (WB)</strong>
+              <small style={{ fontSize: 10, color: 'var(--color-text-muted)' }}>{parcels?.features?.length || 13} PostGIS parcels seeded</small>
             </div>
 
-            <div style={{ background: '#f8fafc', padding: 14, borderRadius: 10, border: '1px solid #e2e8f0' }}>
-              <span style={{ fontSize: 11, color: '#64748b' }}>Integrated RoRs</span>
-              <strong style={{ display: 'block', fontSize: 14, color: '#0284c7', marginTop: 2 }}>100% Interoperable</strong>
-              <small style={{ fontSize: 10, color: '#64748b' }}>Revenue + Registry synced</small>
+            <div style={{ background: 'var(--color-surface-700)', padding: 14, borderRadius: 10, border: '1px solid var(--color-border)' }}>
+              <span style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>Integrated RoRs</span>
+              <strong style={{ display: 'block', fontSize: 14, color: '#38bdf8', marginTop: 2 }}>100% Interoperable</strong>
+              <small style={{ fontSize: 10, color: 'var(--color-text-muted)' }}>Revenue + Registry synced</small>
             </div>
 
-            <p style={{ fontSize: 11, color: '#64748b', lineHeight: 1.5, margin: 0, marginTop: 'auto' }}>
+            <p style={{ fontSize: 11, color: 'var(--color-text-muted)', lineHeight: 1.5, margin: 0, marginTop: 'auto' }}>
               💡 <em>Click any parcel boundary on the map to inspect its real-time multi-department dossier.</em>
             </p>
           </aside>

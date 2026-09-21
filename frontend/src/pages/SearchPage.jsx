@@ -39,10 +39,10 @@ export default function SearchPage() {
     <div style={{ display:'flex', flexDirection:'column', height:'100%' }}>
       <div className="page-header">
         <div>
-          <h1 style={{ margin:0, fontSize:22, fontWeight:800, color:'#064e3b', fontFamily:'Space Grotesk' }}>
+          <h1 style={{ margin:0, fontSize:22, fontWeight:800, color:'var(--color-text-primary)', fontFamily:'Space Grotesk' }}>
             Parcel Search
           </h1>
-          <p style={{ margin:0, fontSize:12, color:'#475569', marginTop:2 }}>
+          <p style={{ margin:0, fontSize:12, color:'var(--color-text-muted)', marginTop:2 }}>
             Search by ULPIN, Khasra number, Plot number, or Owner name
           </p>
         </div>
@@ -53,7 +53,7 @@ export default function SearchPage() {
         <div style={{ maxWidth:640, margin:'0 auto 32px' }}>
           <form onSubmit={handleSearch} style={{ display:'flex', gap:8 }}>
             <div style={{ flex:1, position:'relative' }}>
-              <Search size={16} style={{ position:'absolute', left:14, top:'50%', transform:'translateY(-50%)', color:'#059669' }} />
+              <Search size={16} style={{ position:'absolute', left:14, top:'50%', transform:'translateY(-50%)', color:'var(--color-brand-500)' }} />
               <input
                 className="input"
                 style={{ paddingLeft:42 }}
@@ -70,7 +70,7 @@ export default function SearchPage() {
 
           {/* Quick searches */}
           <div style={{ marginTop:16 }}>
-            <p style={{ fontSize:11, color:'#065f46', fontWeight:700, marginBottom:8, textTransform:'uppercase', letterSpacing:'0.08em' }}>
+            <p style={{ fontSize:11, color:'var(--color-text-brand)', fontWeight:700, marginBottom:8, textTransform:'uppercase', letterSpacing:'0.08em' }}>
               Try these demo searches:
             </p>
             <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
@@ -80,11 +80,11 @@ export default function SearchPage() {
                   onClick={() => quickSearch(q)}
                   style={{
                     padding:'5px 12px', borderRadius:20, fontSize:12, fontWeight:600, cursor:'pointer',
-                    background:'#ecfdf5', color:'#047857',
-                    border:'1px solid #a7f3d0', transition:'all 0.15s'
+                    background:'var(--color-surface-700)', color:'var(--color-text-brand)',
+                    border:'1px solid var(--color-border)', transition:'all 0.15s'
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.background = '#d1fae5'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = '#ecfdf5'; }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--color-brand-500)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--color-border)'; }}
                 >
                   {q}
                 </button>
@@ -96,18 +96,18 @@ export default function SearchPage() {
         {/* Results */}
         {searched && (
           <div style={{ maxWidth:800, margin:'0 auto' }}>
-            <div style={{ fontSize:12, color:'#475569', marginBottom:12 }}>
-              {results.length} result{results.length !== 1 ? 's' : ''} for "<strong style={{ color:'#0f172a' }}>{query}</strong>"
+            <div style={{ fontSize:12, color:'var(--color-text-muted)', marginBottom:12 }}>
+              {results.length} result{results.length !== 1 ? 's' : ''} for "<strong style={{ color:'var(--color-text-primary)' }}>{query}</strong>"
             </div>
             {results.length === 0 && !loading && (
               <div style={{
-                textAlign:'center', padding:48, background:'#ffffff',
-                border:'1px solid rgba(5,150,105,0.2)', borderRadius:12, color:'#64748b',
+                textAlign:'center', padding:48, background:'var(--color-surface-800)',
+                border:'1px solid var(--color-border)', borderRadius:12, color:'var(--color-text-muted)',
                 boxShadow:'var(--shadow-card)'
               }}>
                 <div style={{ fontSize:32, marginBottom:12 }}>🔍</div>
-                <div style={{ fontWeight:600, color:'#0f172a' }}>No parcels found. Try a different search term.</div>
-                <div style={{ fontSize:12, marginTop:8 }}>Try: ULPIN (WB-DGP-00000001), owner name, or khasra number</div>
+                <div style={{ fontWeight:600, color:'var(--color-text-primary)' }}>No parcels found. Try a different search term.</div>
+                <div style={{ fontSize:12, marginTop:8, color:'var(--color-text-muted)' }}>Try: ULPIN (WB-DGP-00000001), owner name, or khasra number</div>
               </div>
             )}
             <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
@@ -130,26 +130,26 @@ export default function SearchPage() {
                   >
                     <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start' }}>
                       <div>
-                        <div style={{ fontFamily:'monospace', fontSize:16, color:'#059669', fontWeight:800 }}>
+                        <div style={{ fontFamily:'monospace', fontSize:16, color:'var(--color-brand-500)', fontWeight:800 }}>
                           {r.ulpin}
                         </div>
                         <div style={{ marginTop:6, display:'flex', gap:12, alignItems:'center', flexWrap:'wrap' }}>
-                          <span style={{ fontSize:12, color:'#475569', fontWeight:500 }}>
-                            <MapPin size={12} color="#059669" style={{ display:'inline', marginRight:4 }} />
+                          <span style={{ fontSize:12, color:'var(--color-text-muted)', fontWeight:500 }}>
+                            <MapPin size={12} color="var(--color-brand-500)" style={{ display:'inline', marginRight:4 }} />
                             {r.village_name} · {r.district_name}
                           </span>
                           <span className="badge" style={{ background:`${color}15`, color, border:`1px solid ${color}35` }}>
                             {r.land_use}
                           </span>
                           {r.plot_no && (
-                            <span style={{ fontSize:12, color:'#64748b' }}>Plot: {r.plot_no}</span>
+                            <span style={{ fontSize:12, color:'var(--color-text-muted)' }}>Plot: {r.plot_no}</span>
                           )}
                           {r.area_recorded && (
-                            <span style={{ fontSize:12, color:'#64748b' }}>{r.area_recorded.toLocaleString()} m²</span>
+                            <span style={{ fontSize:12, color:'var(--color-text-muted)' }}>{r.area_recorded.toLocaleString()} m²</span>
                           )}
                         </div>
                       </div>
-                      <ArrowRight size={18} color="#059669" style={{ marginTop:4 }} />
+                      <ArrowRight size={18} color="var(--color-brand-500)" style={{ marginTop:4 }} />
                     </div>
                   </div>
                 );
@@ -162,8 +162,8 @@ export default function SearchPage() {
         {!searched && (
           <div style={{ maxWidth:600, margin:'0 auto', textAlign:'center', padding:48 }}>
             <div style={{ fontSize:48, marginBottom:16 }}>🗺️</div>
-            <h2 style={{ color:'#064e3b', fontWeight:800, margin:'0 0 8px' }}>Search Land Parcels</h2>
-            <p style={{ color:'#475569', fontSize:14, lineHeight:1.7 }}>
+            <h2 style={{ color:'var(--color-text-primary)', fontWeight:800, margin:'0 0 8px' }}>Search Land Parcels</h2>
+            <p style={{ color:'var(--color-text-muted)', fontSize:14, lineHeight:1.7 }}>
               Enter a ULPIN, Khasra/Dag number, Plot number, or owner name to find any parcel.
               The search covers all departmental records in the interoperability layer.
             </p>

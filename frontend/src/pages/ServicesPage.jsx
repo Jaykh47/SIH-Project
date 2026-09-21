@@ -201,16 +201,16 @@ export default function ServicesPage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{
             width: 42, height: 42, borderRadius: 12,
-            background: '#ecfdf5', border: '1px solid #a7f3d0',
+            background: 'rgba(52, 211, 153, 0.12)', border: '1px solid rgba(52, 211, 153, 0.25)',
             display: 'flex', alignItems: 'center', justifyContent: 'center'
           }}>
             <Briefcase size={22} color="#059669" />
           </div>
           <div>
-            <h1 style={{ fontSize: 24, fontWeight: 800, margin: 0, color: '#064e3b' }}>
+            <h1 style={{ fontSize: 24, fontWeight: 800, margin: 0, color: 'var(--color-text-primary)' }}>
               Citizen Land Services Portal
             </h1>
-            <p style={{ margin: '2px 0 0', fontSize: 13, color: '#475569' }}>
+            <p style={{ margin: '2px 0 0', fontSize: 13, color: 'var(--color-text-muted)' }}>
               Transparent, accountable single-window land governance workflow with ULPIN verification and real-time tracking.
             </p>
           </div>
@@ -231,8 +231,8 @@ export default function ServicesPage() {
             <div key={s.num} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{
                 width: 32, height: 32, borderRadius: '50%',
-                background: step === s.num ? '#059669' : step > s.num ? '#047857' : '#e2e8f0',
-                color: step >= s.num ? '#ffffff' : '#64748b', fontSize: 13, fontWeight: 700,
+                background: step === s.num ? '#059669' : step > s.num ? '#047857' : 'var(--color-surface-700)',
+                color: step >= s.num ? '#ffffff' : 'var(--color-text-muted)', fontSize: 13, fontWeight: 700,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 boxShadow: step === s.num ? '0 4px 12px rgba(5, 150, 105, 0.3)' : 'none'
               }}>
@@ -240,12 +240,12 @@ export default function ServicesPage() {
               </div>
               <span style={{
                 fontSize: 13, fontWeight: 700,
-                color: step === s.num ? '#064e3b' : step > s.num ? '#059669' : '#64748b'
+                color: step === s.num ? 'var(--color-brand-500)' : step > s.num ? 'var(--color-brand-500)' : 'var(--color-text-muted)'
               }}>
                 {s.label}
               </span>
               {idx < 2 && (
-                <div style={{ width: 44, height: 2, background: step > s.num ? '#059669' : '#e2e8f0' }} />
+                <div style={{ width: 44, height: 2, background: step > s.num ? 'var(--color-brand-500)' : 'var(--color-border)' }} />
               )}
             </div>
           ))}
@@ -257,20 +257,20 @@ export default function ServicesPage() {
         <div>
           {/* Quick Action Cards Grid (from IntegratedDashboard) */}
           <div style={{
-            background: 'linear-gradient(135deg, #f0fdf4, #ffffff)',
-            border: '1px solid rgba(5,150,105,0.18)', borderRadius: 16,
-            padding: 24, marginBottom: 32, boxShadow: '0 4px 16px rgba(0,0,0,0.03)'
+            background: 'var(--color-surface-800)',
+            border: '1px solid var(--color-border)', borderRadius: 16,
+            padding: 24, marginBottom: 32, boxShadow: 'var(--shadow-card)'
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
               <div>
-                <span style={{ fontSize: 10, color: '#047857', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                <span style={{ fontSize: 10, color: 'var(--color-text-brand)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                   Self-Service Citizen Desk
                 </span>
-                <h3 style={{ margin: '2px 0 0', fontSize: 17, fontWeight: 800, color: '#0f172a' }}>
+                <h3 style={{ margin: '2px 0 0', fontSize: 17, fontWeight: 800, color: 'var(--color-text-primary)' }}>
                   Fast Digital Citizen Services
                 </h3>
               </div>
-              <span style={{ fontSize: 11, color: '#059669', background: '#ecfdf5', border: '1px solid #a7f3d0', padding: '3px 10px', borderRadius: 20, fontWeight: 700 }}>
+              <span style={{ fontSize: 11, color: 'var(--color-brand-500)', background: 'rgba(52, 211, 153, 0.12)', border: '1px solid rgba(52, 211, 153, 0.25)', padding: '3px 10px', borderRadius: 20, fontWeight: 700 }}>
                 Instant Processing
               </span>
             </div>
@@ -286,27 +286,27 @@ export default function ServicesPage() {
                   key={card.id}
                   onClick={() => setModalKey(card.id)}
                   style={{
-                    background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 12,
+                    background: 'var(--color-surface-700)', border: '1px solid var(--color-border)', borderRadius: 12,
                     padding: 16, cursor: 'pointer', transition: 'all 0.15s ease',
                     display: 'flex', flexDirection: 'column', justifyContent: 'space-between'
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = '#059669'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--color-brand-500)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--color-border)'; e.currentTarget.style.transform = 'translateY(0)'; }}
                 >
                   <div>
                     <div style={{
-                      width: 34, height: 34, borderRadius: 8, background: '#ecfdf5',
-                      color: '#047857', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      width: 34, height: 34, borderRadius: 8, background: 'rgba(52, 211, 153, 0.12)',
+                      color: 'var(--color-brand-500)', display: 'flex', alignItems: 'center', justifyContent: 'center',
                       fontWeight: 800, fontSize: 16, marginBottom: 10
                     }}>
                       {card.icon}
                     </div>
-                    <strong style={{ fontSize: 13, color: '#0f172a', display: 'block' }}>{card.title}</strong>
-                    <p style={{ margin: '4px 0 0', fontSize: 11, color: '#64748b', lineHeight: 1.4 }}>{card.desc}</p>
+                    <strong style={{ fontSize: 13, color: 'var(--color-text-primary)', display: 'block' }}>{card.title}</strong>
+                    <p style={{ margin: '4px 0 0', fontSize: 11, color: 'var(--color-text-muted)', lineHeight: 1.4 }}>{card.desc}</p>
                   </div>
                   <button
                     style={{
-                      marginTop: 12, background: '#f0fdf4', border: 'none', color: '#047857',
+                      marginTop: 12, background: 'var(--color-surface-800)', border: '1px solid var(--color-border)', color: 'var(--color-text-brand)',
                       padding: '6px 10px', borderRadius: 6, fontSize: 11, fontWeight: 700,
                       cursor: 'pointer', textAlign: 'center', width: '100%'
                     }}
@@ -320,7 +320,7 @@ export default function ServicesPage() {
 
           <div style={{ marginBottom: 20 }}>
             <span className="section-label">Step 1 of 3</span>
-            <h2 style={{ fontSize: 20, fontWeight: 800, color: '#064e3b', margin: '4px 0 0' }}>
+            <h2 style={{ fontSize: 20, fontWeight: 800, color: 'var(--color-text-primary)', margin: '4px 0 0' }}>
               Statutory Departmental Services
             </h2>
           </div>
@@ -337,11 +337,11 @@ export default function ServicesPage() {
                     padding: 22,
                     cursor: 'pointer',
                     transition: 'all 0.2s ease',
-                    border: '1px solid #e2e8f0',
+                    border: '1px solid var(--color-border)',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
+                    boxShadow: 'var(--shadow-card)'
                   }}
                   onMouseEnter={e => {
                     e.currentTarget.style.borderColor = '#059669';
